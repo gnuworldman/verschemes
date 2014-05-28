@@ -1,0 +1,554 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>versioning &mdash; versioning 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="versioning 1.0.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">versioning 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for versioning</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;versioning module</span>
+
+<span class="sd">This module can be used to manage and enforce rules for version numbering.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">collections</span> <span class="kn">as</span> <span class="nn">_collections</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">total_ordering</span> <span class="k">as</span> <span class="n">_total_ordering</span>
+<span class="kn">import</span> <span class="nn">re</span> <span class="kn">as</span> <span class="nn">_re</span>
+
+<span class="kn">from</span> <span class="nn">._version</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__version_info__</span>
+
+
+<span class="n">DEFAULT_FIELD_TYPE</span> <span class="o">=</span> <span class="nb">int</span>
+<span class="n">DEFAULT_SEGMENT_SEPARATOR</span> <span class="o">=</span> <span class="s">&#39;.&#39;</span>
+
+
+<span class="n">SegmentField</span> <span class="o">=</span> <span class="n">_collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;SegmentField&#39;</span><span class="p">,</span>
+                                       <span class="s">&#39;type name re_pattern render&#39;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;The definition of an atomic portion of a version segment value.</span>
+
+<span class="sd">This is an immutable set of metadata defining the parameters of a field in a</span>
+<span class="sd">`SegmentDefinition`.</span>
+
+<span class="sd">The attributes can be set only in the constructor by name or position and can</span>
+<span class="sd">be accessed by attribute name or item index:</span>
+
+<span class="sd">0. :attr:`type` (default: `int`) is the underlying type of the field value.</span>
+
+<span class="sd">   Only `int` and `str` have been tested.</span>
+
+<span class="sd">1. :attr:`name` (default: &quot;value&quot;) is the name of the field, which must be</span>
+<span class="sd">   unique among all of the fields in a segment.</span>
+
+<span class="sd">   Each segment will often have only one field, so the name is defaulted to</span>
+<span class="sd">   something quite generic, but it must be explicitly set to ensure uniqueness</span>
+<span class="sd">   when the `SegmentDefinition` contains multiple fields.</span>
+
+<span class="sd">2. :attr:`re_pattern` (default: &quot;0|[1-9][0-9]*&quot;) is the regular expression</span>
+<span class="sd">   pattern that the string representation of the field value must match.</span>
+
+<span class="sd">3. :attr:`render` (default: `str`) is the function that takes the underlying</span>
+<span class="sd">   value and returns its appropriate string representation.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">SegmentField</span><span class="o">.</span><span class="n">__new__</span><span class="o">.</span><span class="n">__defaults__</span> <span class="o">=</span> <span class="p">(</span><span class="n">DEFAULT_FIELD_TYPE</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">,</span>
+                                     <span class="s">&#39;0|[1-9][0-9]*&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+<span class="n">DEFAULT_SEGMENT_FIELD</span> <span class="o">=</span> <span class="n">SegmentField</span><span class="p">()</span>
+
+
+<span class="n">_SegmentDefinition</span> <span class="o">=</span> <span class="n">_collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;_SegmentDefinition&#39;</span><span class="p">,</span>
+    <span class="s">&#39;optional default separator fields&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SegmentDefinition"><a class="viewcode-back" href="../api.html#versioning.SegmentDefinition">[docs]</a><span class="k">class</span> <span class="nc">SegmentDefinition</span><span class="p">(</span><span class="n">_SegmentDefinition</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;The definition of a version segment.</span>
+
+<span class="sd">    This is an immutable set of metadata defining the parameters of a segment.</span>
+
+<span class="sd">    The attributes can be set only in the constructor by name or position and</span>
+<span class="sd">    can be accessed by attribute name or item index:</span>
+
+<span class="sd">    0. :attr:`optional` (default: False) indicates whether the segment may be</span>
+<span class="sd">       excluded from rendering and whether its value is allowed to be</span>
+<span class="sd">       unspecified even if the segment has no default.</span>
+
+<span class="sd">    1. :attr:`default` (default: None) is the implied value of the segment when</span>
+<span class="sd">       the value is unspecified (or None).</span>
+
+<span class="sd">    2. :attr:`separator` (default: &#39;.&#39;) is the string within the version&#39;s</span>
+<span class="sd">       string representation that comes just before the segment value(s).</span>
+
+<span class="sd">       This value is ignored for the first segment in a version and also not</span>
+<span class="sd">       rendered when all optional segments before it are unspecified.</span>
+
+<span class="sd">    3. :attr:`fields` (default: a singular `SegmentField` instance) is the</span>
+<span class="sd">       sequence of metadata for the field(s) in the segment.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># This must be specified again to keep this subclass from making __dict__.</span>
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">separator</span><span class="o">=</span><span class="n">DEFAULT_SEGMENT_SEPARATOR</span><span class="p">,</span>
+                <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="n">DEFAULT_SEGMENT_FIELD</span><span class="p">,)):</span>
+        <span class="sd">&quot;&quot;&quot;Provide default values.</span>
+
+<span class="sd">        This cannot be done with `__init__` since `self` is immutable.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">SegmentField</span><span class="p">):</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="n">fields</span><span class="p">,)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span>
+              <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">_collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)):</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">SegmentField</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Fields must be of type {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">SegmentField</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">]))</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Field names must be unique within a segment definition.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">default</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">_validate_value</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SegmentDefinition</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">optional</span><span class="p">),</span>
+            <span class="n">default</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">separator</span><span class="p">),</span> <span class="n">fields</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_validate_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">value_string</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                      <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">_collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)</span> <span class="k">else</span>
+                      <span class="p">[</span><span class="n">value</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s">&quot;More values were given than fields in the segment &quot;</span>
+                    <span class="s">&quot;definition.&quot;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">):</span>
+                <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+            <span class="n">value_string</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">None</span> <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">x</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+                                    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">values</span><span class="p">)])</span>
+        <span class="n">re_pattern</span> <span class="o">=</span> <span class="s">&#39;^&#39;</span> <span class="o">+</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;(?P&lt;{}&gt;{})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">re_pattern</span><span class="p">)</span>
+                                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">])</span> <span class="o">+</span> <span class="s">&#39;$&#39;</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">re_pattern</span><span class="p">,</span> <span class="n">value_string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Version segment {!r} does not match {!r}.&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value_string</span><span class="p">,</span> <span class="n">re_pattern</span><span class="p">))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span> <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="ow">and</span>
+                           <span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span>
+                  <span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="SegmentDefinition.re_pattern"><a class="viewcode-back" href="../api.html#versioning.SegmentDefinition.re_pattern">[docs]</a>    <span class="k">def</span> <span class="nf">re_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The regular expression pattern for the segment&#39;s possible string</span>
+<span class="sd">        representations.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">re_pattern</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="SegmentDefinition.validate_value"><a class="viewcode-back" href="../api.html#versioning.SegmentDefinition.validate_value">[docs]</a>    <span class="k">def</span> <span class="nf">validate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate the given value and return the value as the inner type.</span>
+
+<span class="sd">        The given value may be a tuple of field values or a string that shall</span>
+<span class="sd">        be parsed by the fields&#39; regular expressions.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">optional</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s">&quot;A value is required because the version segment is not &quot;</span>
+                    <span class="s">&quot;optional and has no default.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SegmentDefinition.render"><a class="viewcode-back" href="../api.html#versioning.SegmentDefinition.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the given segment value as a string.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span>
+                <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">))]))</span>
+</div></div>
+<span class="n">DEFAULT_SEGMENT_DEFINITION</span> <span class="o">=</span> <span class="n">SegmentDefinition</span><span class="p">()</span>
+
+
+<span class="nd">@_total_ordering</span>
+<div class="viewcode-block" id="Version"><a class="viewcode-back" href="../api.html#versioning.Version">[docs]</a><span class="k">class</span> <span class="nc">Version</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;A class whose instances adhere to versioning rules it defines.</span>
+
+<span class="sd">    The versioning rules are defined in `SEGMENT_DEFINITIONS`, which may be</span>
+<span class="sd">    overridden in a subclass to make it more specific to the versioning rules</span>
+<span class="sd">    represented by the subclass.</span>
+
+<span class="sd">    The concept is that the class represents a particular set of versioning</span>
+<span class="sd">    rules, and the instances of that class are version identifiers that follow</span>
+<span class="sd">    those rules.</span>
+
+<span class="sd">    Pass the constructor either a version identifier as a `str` or the</span>
+<span class="sd">    individual segment values in order corresponding to the</span>
+<span class="sd">    `SEGMENT_DEFINITIONS` defined by the class (or any number of integers if</span>
+<span class="sd">    using the default implementation).  Optional segments and segments with</span>
+<span class="sd">    default values may be passed a value of `None` or excluded from the end.</span>
+
+<span class="sd">    The instance&#39;s individual segment values can be accessed or set via</span>
+<span class="sd">    standard slicing.  For example, ``instance[0]`` returns the value of the</span>
+<span class="sd">    first segment.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The parameters for segments in this version.</span>
+
+<span class="sd">    If not using the default, this must be set to a sequence of</span>
+<span class="sd">    `SegmentDefinition`\ s, one for each segment.  This should be done in the</span>
+<span class="sd">    subclass definition and henceforth remain unmodified (hopefully the CAPs</span>
+<span class="sd">    hinted at that).  If any changes *are* made after the class has been used,</span>
+<span class="sd">    they won&#39;t be heeded anyway.</span>
+
+<span class="sd">    The default (empty sequence) is special in that it allows for a varying and</span>
+<span class="sd">    infinite number of segments, each following the rules of the default</span>
+<span class="sd">    `SegmentDefinition`.  This means that the default implementation supports</span>
+<span class="sd">    the most common versioning structure of an arbitrary number of integer</span>
+<span class="sd">    segments separated by dots.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">values</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">values</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s">&quot;{}.{}(&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="n">cls</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span> <span class="o">+</span>
+                <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">repr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">])</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Version</span><span class="p">):</span>
+            <span class="n">other_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">other_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="n">other</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">other_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="o">==</span> <span class="n">other</span>
+            <span class="c"># TODO: Manufacture a test case for Python 2 to execute after</span>
+            <span class="c"># this point if possible.</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[:]</span> <span class="o">==</span> <span class="n">other</span><span class="p">[:]</span>
+
+    <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Version</span><span class="p">):</span>
+            <span class="n">other_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">other_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">other</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">other_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">other</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="c"># When sys.version_info[:2] &gt;= (3, 4) is all that&#39;s supported:</span>
+            <span class="c"># return NotImplemented</span>
+            <span class="c"># Until then, raising this TypeError should be equivalent.</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s">&quot;unorderable types: {}() &lt; {}()&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">other_type</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[:]</span> <span class="o">&lt;</span> <span class="n">other</span><span class="p">[:]</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">v</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">d</span><span class="o">.</span><span class="n">default</span>
+        <span class="n">definition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_definition_slice</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">get</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">definition</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">get</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">definition</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="n">validate_value</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">definition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_definition_slice</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">validate</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">definition</span><span class="p">))</span>
+                               <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">)</span> <span class="k">else</span>
+                               <span class="n">validate</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">definition</span><span class="p">))</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_definitions</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="s">&#39;__SEGMENT_DEFINITIONS&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span><span class="p">,</span>
+                               <span class="n">_collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">SegmentDefinition</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cls</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span><span class="p">])):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s">&quot;SEGMENT_DEFINITIONS for {} is not a sequence of &quot;</span>
+                    <span class="s">&quot;SegmentDefinitions.&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cls</span><span class="p">))</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">__SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_re</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="s">&#39;__RE&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">definitions</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">_get_definitions</span><span class="p">()</span>
+            <span class="n">re</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">definitions</span><span class="p">)):</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">definitions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">re_segment</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">re_segment</span> <span class="o">+=</span> <span class="s">&quot;(?:&quot;</span> <span class="o">+</span> <span class="n">_re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">separator</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span>
+                    <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">optional</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">definitions</span><span class="p">[:</span><span class="n">i</span><span class="p">]]):</span>
+                        <span class="n">re_segment</span> <span class="o">+=</span> <span class="s">&quot;?&quot;</span>
+                <span class="n">re_segment</span> <span class="o">+=</span> <span class="s">&quot;(?P&lt;segment{}&gt;{})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">re_pattern</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">optional</span><span class="p">:</span>
+                    <span class="n">re_segment</span> <span class="o">=</span> <span class="s">&quot;(?:&quot;</span> <span class="o">+</span> <span class="n">re_segment</span> <span class="o">+</span> <span class="s">&quot;)?&quot;</span>
+                <span class="n">re</span> <span class="o">+=</span> <span class="n">re_segment</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">__RE</span> <span class="o">=</span> <span class="n">_re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&#39;^&#39;</span> <span class="o">+</span> <span class="n">re</span> <span class="o">+</span> <span class="s">&#39;$&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">_get_definition_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">definitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_definitions</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">definitions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">definitions</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">DEFAULT_SEGMENT_DEFINITION</span><span class="p">,)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">DEFAULT_SEGMENT_DEFINITION</span>
+
+    <span class="k">def</span> <span class="nf">_get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">segment_definitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_definitions</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span>
+            <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">_collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">segment_definitions</span><span class="p">:</span>
+                <span class="n">re</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_re</span><span class="p">()</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s">&quot;Version {!r} does not match {!r}.&quot;</span>
+                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">pattern</span><span class="p">))</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">DEFAULT_SEGMENT_SEPARATOR</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">segment_definitions</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">segment_definitions</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s">&quot;There are too many segment values ({}) for the &quot;</span>
+                        <span class="s">&quot;number of segment definitions ({}).&quot;</span>
+                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">segment_definitions</span><span class="p">)))</span>
+                <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">segment_definitions</span><span class="p">):</span>
+                    <span class="n">value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s">&quot;One or more values are required when using implicit &quot;</span>
+                    <span class="s">&quot;segment definitions.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="n">version</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_version</span><span class="p">,</span> <span class="n">_set_version</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;The version representation.</span>
+
+<span class="sd">    This attribute returns the string representation of the version identifier</span>
+<span class="sd">    (same as passing the instance to `str`) and can also be used to set all of</span>
+<span class="sd">    the segment values at once with a compatible version string or a sequence</span>
+<span class="sd">    of values for all non-optional segments.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_render_exclude_defaults_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">scope</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">scope</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">scope</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]):</span>
+                <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_definition_slice</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">optional</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Version.render"><a class="viewcode-back" href="../api.html#versioning.Version.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_defaults</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">include_callbacks</span><span class="o">=</span><span class="p">(),</span>
+               <span class="n">exclude_callbacks</span><span class="o">=</span><span class="p">()):</span>
+        <span class="sd">&quot;&quot;&quot;Render the version into a string representation.</span>
+
+<span class="sd">        Pass `False` (or equivalent) for the `exclude_defaults` argument to</span>
+<span class="sd">        stop the default behavior of excluding optional segments that have a</span>
+<span class="sd">        default value but have not been explicitly set.</span>
+
+<span class="sd">        If there was only one way to render a version, then this method would</span>
+<span class="sd">        not exist, and its implementation would be in `__str__`.  There is,</span>
+<span class="sd">        however, only one default way, which is done when `__str__` is called,</span>
+<span class="sd">        and that is to call this method with its default arguments.</span>
+
+<span class="sd">        There could be many ways to render a version, depending on its</span>
+<span class="sd">        complexity and features.  The base class implements rendering with</span>
+<span class="sd">        only one simple argument (`exclude_defaults`) and two complex arguments</span>
+<span class="sd">        (`include_callbacks` and `exclude_callbacks`).  The two complex</span>
+<span class="sd">        arguments (i.e., callback arguments) allow for future versions and</span>
+<span class="sd">        subclasses to provide additional simple arguments.  (Keep reading if</span>
+<span class="sd">        this interests you.)</span>
+
+<span class="sd">        The signature of this method should be considered the most volatile in</span>
+<span class="sd">        the versioning module.  The callback arguments should never be passed</span>
+<span class="sd">        by position to keep the code prepared for injection of additional</span>
+<span class="sd">        simple arguments in the base implementation that are more likely to be</span>
+<span class="sd">        passed by position.</span>
+
+<span class="sd">        **Callback structure**</span>
+
+<span class="sd">        The callback arguments are sequences of metadata describing how the</span>
+<span class="sd">        simple arguments are processed.  The metadata may just be a function</span>
+<span class="sd">        or a sequence consisting of a function and any additional arguments.</span>
+<span class="sd">        Each callback function requires the &#39;version&#39; (or &#39;self&#39; if its a</span>
+<span class="sd">        method) argument and the &#39;index&#39; argument.  The &quot;additional&quot; arguments</span>
+<span class="sd">        mentioned above follow the required arguments in the callback</span>
+<span class="sd">        function&#39;s signature.</span>
+
+<span class="sd">        **Callback processing**</span>
+
+<span class="sd">        The functions in `include_callbacks` can return `True` (or equivalent)</span>
+<span class="sd">        to force the segment identified by the &#39;index&#39; argument to be included</span>
+<span class="sd">        in the rendering.  If no &quot;include&quot; callbacks force the inclusion of the</span>
+<span class="sd">        segment, then the functions in `exclude_callbacks` can return `True`</span>
+<span class="sd">        (or equivalent) to exclude the segment of the version identified by the</span>
+<span class="sd">        &#39;index&#39; argument in the rendering.  Any segment with a value (i.e., not</span>
+<span class="sd">        `None`) that is not excluded by this process will be rendered in the</span>
+<span class="sd">        result.  The `exclude_defaults` argument is an example of a simple</span>
+<span class="sd">        argument whose affect is implemented via `exclude_callbacks` with the</span>
+<span class="sd">        `_render_exclude_defaults_callback` method.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">include_callbacks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">include_callbacks</span><span class="p">)</span>
+        <span class="n">exclude_callbacks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">exclude_callbacks</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exclude_defaults</span><span class="p">:</span>
+            <span class="n">exclude_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_render_exclude_defaults_callback</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">callback_affirmative</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">_collections</span><span class="o">.</span><span class="n">Callable</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">_collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)):</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">callback</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+                <span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="n">definitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_definition_slice</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)):</span>
+            <span class="n">definition</span> <span class="o">=</span> <span class="n">definitions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">definition</span><span class="o">.</span><span class="n">optional</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">include</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">include_callbacks</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">callback_affirmative</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+                    <span class="n">include</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">include</span><span class="p">:</span>
+                <span class="n">include</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">exclude_callbacks</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">callback_affirmative</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+                        <span class="n">include</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">include</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">+=</span> <span class="n">definition</span><span class="o">.</span><span class="n">separator</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="n">definition</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">versioning 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Craig Hurd-Rindy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

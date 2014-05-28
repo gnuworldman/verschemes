@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>versioning.python &mdash; versioning 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="versioning 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="versioning" href="../versioning.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">versioning 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../versioning.html" accesskey="U">versioning</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for versioning.python</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;versioning.python module</span>
+
+<span class="sd">The Python versioning module implements standard</span>
+<span class="sd">`Python &lt;https://www.python.org/&gt;`_</span>
+<span class="sd">`versioning &lt;https://docs.python.org/3/faq/general.html#how-does-the-python-version-numbering-scheme-work&gt;`__.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">SegmentDefinition</span> <span class="k">as</span> <span class="n">_SegmentDefinition</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">SegmentField</span> <span class="k">as</span> <span class="n">_SegmentField</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Version</span> <span class="k">as</span> <span class="n">_Version</span>
+
+
+<span class="n">SEGMENTS</span> <span class="o">=</span> <span class="p">(</span><span class="n">MAJOR</span><span class="p">,</span> <span class="n">MINOR</span><span class="p">,</span> <span class="n">MICRO</span><span class="p">,</span> <span class="n">SUFFIX</span><span class="p">)</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PythonMajorVersion"><a class="viewcode-back" href="../../api.html#versioning.python.PythonMajorVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonMajorVersion</span><span class="p">(</span><span class="n">_Version</span><span class="p">):</span>
+
+    <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(),</span>
+    <span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="PythonMajorVersion.major_version"><a class="viewcode-back" href="../../api.html#versioning.python.PythonMajorVersion.major_version">[docs]</a>    <span class="k">def</span> <span class="nf">major_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a new `PythonMajorVersion` with the object&#39;s values.</span>
+
+<span class="sd">        This is mainly useful in subclasses.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">PythonMajorVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">MAJOR</span><span class="p">])</span>
+
+</div></div>
+<div class="viewcode-block" id="PythonMinorVersion"><a class="viewcode-back" href="../../api.html#versioning.python.PythonMinorVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonMinorVersion</span><span class="p">(</span><span class="n">PythonMajorVersion</span><span class="p">):</span>
+
+    <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="n">PythonMajorVersion</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span> <span class="o">+</span> <span class="p">(</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(),</span>
+    <span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="PythonMinorVersion.minor_version"><a class="viewcode-back" href="../../api.html#versioning.python.PythonMinorVersion.minor_version">[docs]</a>    <span class="k">def</span> <span class="nf">minor_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a new `PythonMinorVersion` with the object&#39;s values.</span>
+
+<span class="sd">        This is mainly useful in subclasses.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">PythonMinorVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">MAJOR</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="n">MINOR</span><span class="p">])</span>
+
+</div></div>
+<div class="viewcode-block" id="PythonMicroVersion"><a class="viewcode-back" href="../../api.html#versioning.python.PythonMicroVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonMicroVersion</span><span class="p">(</span><span class="n">PythonMinorVersion</span><span class="p">):</span>
+
+    <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="n">PythonMinorVersion</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span> <span class="o">+</span> <span class="p">(</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">optional</span><span class="o">=</span><span class="bp">True</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="PythonMicroVersion.micro_version"><a class="viewcode-back" href="../../api.html#versioning.python.PythonMicroVersion.micro_version">[docs]</a>    <span class="k">def</span> <span class="nf">micro_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a new `PythonMicroVersion` with the object&#39;s values.</span>
+
+<span class="sd">        This is mainly useful in subclasses.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">PythonMicroVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">MAJOR</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="n">MINOR</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="n">MICRO</span><span class="p">])</span>
+
+</div></div>
+<div class="viewcode-block" id="PythonVersion"><a class="viewcode-back" href="../../api.html#versioning.python.PythonVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonVersion</span><span class="p">(</span><span class="n">PythonMicroVersion</span><span class="p">):</span>
+
+    <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="n">PythonMicroVersion</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span> <span class="o">+</span> <span class="p">(</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+            <span class="n">separator</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">fields</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">_SegmentField</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s">&#39;releaselevel&#39;</span><span class="p">,</span>
+                    <span class="n">re_pattern</span><span class="o">=</span><span class="s">&#39;[+abc]&#39;</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">_SegmentField</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s">&#39;serial&#39;</span><span class="p">,</span>
+                    <span class="n">re_pattern</span><span class="o">=</span><span class="s">&#39;(?&lt;=[+])|(?&lt;![+])(?:0|[1-9][0-9]*)&#39;</span><span class="p">,</span>
+                    <span class="n">render</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s">&quot;&quot;</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="PythonVersion.is_nondevelopment"><a class="viewcode-back" href="../../api.html#versioning.python.PythonVersion.is_nondevelopment">[docs]</a>    <span class="k">def</span> <span class="nf">is_nondevelopment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Whether this version represents a non-development release.</span>
+
+<span class="sd">        This simply says whether it is equivalent to its `major_version`; that</span>
+<span class="sd">        is, whether the `SUFFIX`-index value is `None`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">SUFFIX</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">versioning 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../versioning.html" >versioning</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Craig Hurd-Rindy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
