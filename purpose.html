@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Purpose of the versioning library &mdash; versioning 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="versioning 1.0.0 documentation" href="index.html" />
+    <link rel="next" title="API (the versioning package)" href="api.html" />
+    <link rel="prev" title="Python versioning library documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="API (the versioning package)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Python versioning library documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">versioning 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="purpose-of-the-versioning-library">
+<h1>Purpose of the versioning library<a class="headerlink" href="#purpose-of-the-versioning-library" title="Permalink to this headline">¶</a></h1>
+<p>Most versioned components have their own method of identifying their versions.
+This method is often termed &#8220;versioning&#8221; or called a &#8220;version scheme&#8221;.  The
+method is simply a set of rules that dictate what is a valid version identifier
+and is usually separated in a number of segments to signify hierarchy among the
+versions.  The hierarchy determines ordering along with the values of the
+segments within the hierarchy.</p>
+<p>For example, the following is an ordered list of common version identifiers:</p>
+<ul class="simple">
+<li>0.1</li>
+<li>0.2</li>
+<li>0.9</li>
+<li>0.10</li>
+<li>0.11</li>
+<li>1.0</li>
+<li>1.0.1</li>
+<li>1.1</li>
+<li>2.0</li>
+<li>10.0</li>
+</ul>
+<p>The most common version identifiers are simply an ordered set of integers
+separated by dots.  The default implementation in the
+<a class="reference internal" href="api.html#versioning.Version" title="versioning.Version"><tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt></a> class provides this common use case with any
+number of segments.  To create an instance of &#8220;version 1.4.2&#8221;, one can write
+<tt class="docutils literal"><span class="pre">Version(1,</span> <span class="pre">4,</span> <span class="pre">2)</span></tt> or <tt class="docutils literal"><span class="pre">Version('1.4.2')</span></tt>
+(after <tt class="docutils literal"><span class="pre">from</span> <span class="pre">versioning</span> <span class="pre">import</span> <span class="pre">Version</span></tt>, of course).</p>
+<p>Some version schemes are more involved and require using subclasses of
+<tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> to represent them.  Each subclass of <tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> represents a specific
+version scheme, whereas each instance of a <tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> subclass represents a
+specific version that follows the class&#8217;s scheme.</p>
+<p>There are several version schemes implemented in the versioning library, and
+more are sure to be added (submissions are welcome).  These implementations
+also work as examples for those wishing to subclass <tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> for their own
+(or another&#8217;s) version scheme.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Python versioning library documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="api.html"
+                        title="next chapter">API (the versioning package)</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/purpose.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="API (the versioning package)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Python versioning library documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">versioning 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Craig Hurd-Rindy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
