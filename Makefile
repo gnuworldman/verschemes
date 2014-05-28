@@ -17,5 +17,7 @@ clean:
 	$(RM) -r build
 	$(RM) -r htmlcov
 	coverage erase
+	git submodule update docs/_build/html
+	git -C docs/_build/html checkout gh-pages
 
 .PHONY: build
