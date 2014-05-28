@@ -3,16 +3,15 @@
 Python versioning library documentation
 =======================================
 
-The `versioning` library provides easy version number management.
-
-See the API documentation below for details and the included specific
-implementations for examples of subclassing the `Version <versioning.Version>` base class.
+The `versioning` package provides easy and customizable version identifier
+management in Python.
 
 Contents:
 
 .. toctree::
    :maxdepth: 4
 
+   purpose
    api
 
 
