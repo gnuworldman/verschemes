@@ -234,9 +234,9 @@ class Version(object):
                 return other_type(str(self)) == other
             # TODO: Manufacture a test case for Python 2 to execute after
             # this point if possible.
-            except (TypeError, ValueError):
+            except (TypeError, ValueError):  # pragma: no cover
                 pass
-            return False
+            return False  # pragma: no cover
         return self[:] == other[:]
 
     def __lt__(self, other):
