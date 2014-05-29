@@ -1,4 +1,4 @@
 [submodule "gh-pages"]
 	path = docs/_build/html
-	url = github.com:gnuworldman/versioning.git
+	url = https://github.com/gnuworldman/versioning.git
 	branch = gh-pages
