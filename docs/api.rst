@@ -1,10 +1,10 @@
-API (the versioning package)
+API (the verschemes package)
 ============================
 
-The bases and default version implementation (versioning module)
+The bases and default version implementation (verschemes module)
 ----------------------------------------------------------------
 
-.. automodule:: versioning
+.. automodule:: verschemes
     :members:
     :undoc-members:
     :show-inheritance:
@@ -15,7 +15,7 @@ Included implementations
 Python
 ^^^^^^
 
-.. automodule:: versioning.python
+.. automodule:: verschemes.python
     :members:
     :undoc-members:
     :show-inheritance:
@@ -23,7 +23,7 @@ Python
 PEP 440
 ^^^^^^^
 
-.. automodule:: versioning.pep440
+.. automodule:: verschemes.pep440
     :members:
     :undoc-members:
     :show-inheritance:
@@ -31,7 +31,7 @@ PEP 440
 PostgreSQL
 ^^^^^^^^^^
 
-.. automodule:: versioning.postgresql
+.. automodule:: verschemes.postgresql
     :members:
     :undoc-members:
     :show-inheritance:

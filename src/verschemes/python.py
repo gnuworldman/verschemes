@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""versioning.python module
+"""verschemes.python module
 
 The Python versioning module implements standard
 `Python <https://www.python.org/>`_

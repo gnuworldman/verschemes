@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""versioning module
+"""verschemes module
 
 This module can be used to manage and enforce rules for version numbering.
 
@@ -396,10 +396,10 @@ class Version(object):
         this interests you.)
 
         The signature of this method should be considered the most volatile in
-        the versioning module.  The callback arguments should never be passed
-        by position to keep the code prepared for injection of additional
-        simple arguments in the base implementation that are more likely to be
-        passed by position.
+        the project.  The callback arguments should never be passed by position
+        to keep the code prepared for injection of additional simple arguments
+        in the base implementation that are more likely to be passed by
+        position.
 
         **Callback structure**
 

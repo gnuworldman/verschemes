@@ -1,4 +1,4 @@
-# Makefile for the Python Versioning project
+# Makefile for the Python verschemes project
 # This has only been tested with GNU make from within the project root.
 
 all: test coverage build doc

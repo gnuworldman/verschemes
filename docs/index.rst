@@ -1,9 +1,9 @@
-.. versioning documentation master file.
+.. verschemes documentation master file.
 
-Python versioning library documentation
+Python verschemes library documentation
 =======================================
 
-The `versioning` package provides easy and customizable version identifier
+The `verschemes` package provides easy and customizable version identifier
 management in Python.
 
 Contents:

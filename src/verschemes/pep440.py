@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""versioning.pep440 module
+"""verschemes.pep440 module
 
 The PEP 440 versioning module implements standard
 `PEP 440 <http://legacy.python.org/dev/peps/pep-0440/>`_
@@ -8,7 +8,7 @@ versioning.  PEP 440
 `local <http://legacy.python.org/dev/peps/pep-0440/#local-version-identifiers>`_
 versions are not supported by this module; they are just public versions with a
 hyphen and a numeric version (as implemented by the defaults in the base
-`versioning.Version` class) appended.
+`verschemes.Version` class) appended.
 
 """
 

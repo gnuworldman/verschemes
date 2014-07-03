@@ -1,4 +1,4 @@
-Purpose of the versioning library
+Purpose of the verschemes library
 =================================
 
 Most versioned components have their own method of identifying their versions.
@@ -23,17 +23,17 @@ For example, the following is an ordered list of common version identifiers:
 
 The most common version identifiers are simply an ordered set of integers
 separated by dots.  The default implementation in the
-`Version <versioning.Version>` class provides this common use case with any
+`Version <verschemes.Version>` class provides this common use case with any
 number of segments.  To create an instance of "version 1.4.2", one can write
 ``Version(1, 4, 2)`` or ``Version('1.4.2')``
-(after ``from versioning import Version``, of course).
+(after ``from verschemes import Version``, of course).
 
 Some version schemes are more involved and require using subclasses of
 `Version` to represent them.  Each subclass of `Version` represents a specific
 version scheme, whereas each instance of a `Version` subclass represents a
 specific version that follows the class's scheme.
 
-There are several version schemes implemented in the versioning library, and
+There are several version schemes implemented in the verschemes library, and
 more are sure to be added (submissions are welcome).  These implementations
 also work as examples for those wishing to subclass `Version` for their own
 (or another's) version scheme.

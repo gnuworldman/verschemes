@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# versioning documentation build configuration file, created by
+# verschemes documentation build configuration file, created by
 # sphinx-quickstart on Sun May 18 19:56:38 2014.
 #
 # This file is execfile()d with the current directory set to its
@@ -51,7 +51,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'versioning'
+project = 'verschemes'
 copyright = '2014, Craig Hurd-Rindy'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -205,7 +205,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'versioning.tex', 'versioning Documentation',
+  ('index', 'verschemes.tex', 'verschemes Documentation',
    'Craig Hurd-Rindy', 'manual'),
 ]
 
@@ -235,7 +235,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'versioning', 'versioning Documentation',
+    ('index', 'verschemes', 'verschemes Documentation',
      ['Craig Hurd-Rindy'], 1)
 ]
 
@@ -249,8 +249,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'versioning', 'versioning Documentation',
-   'Craig Hurd-Rindy', 'versioning', 'One line description of project.',
+  ('index', 'verschemes', 'verschemes Documentation',
+   'Craig Hurd-Rindy', 'verschemes', 'Version identifier management',
    'Miscellaneous'),
 ]
 
@@ -270,13 +270,13 @@ texinfo_documents = [
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = 'versioning'
+epub_title = 'verschemes'
 epub_author = 'Craig Hurd-Rindy'
 epub_publisher = 'Craig Hurd-Rindy'
 epub_copyright = '2014, Craig Hurd-Rindy'
 
 # The basename for the epub file. It defaults to the project name.
-#epub_basename = 'versioning'
+#epub_basename = 'verschemes'
 
 # The HTML theme for the epub output. Since the default themes are not optimized
 # for small screen space, using the same theme for HTML and epub output is

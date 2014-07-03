@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""setup.py for the versioning project"""
+"""setup.py for the verschemes project"""
 
 import os
 from distutils.core import setup
 
 
 # Declare __version_info__ and __version__ from the _version.py module code.
-exec(open(os.path.join(os.path.dirname(__file__), 'src', 'versioning',
+exec(open(os.path.join(os.path.dirname(__file__), 'src', 'verschemes',
                        '_version.py')).read())
 
 
 setup(
-    name='versioning',
+    name='verschemes',
     version=__version__,
     author="Craig Hurd-Rindy",
     author_email="gnuworldman@gmail.com",
@@ -31,5 +31,5 @@ Manage version identifiers easily.
         'Topic :: Utilities',
         ],
     package_dir={'': 'src'},
-    packages=['versioning'],
+    packages=['verschemes'],
     )

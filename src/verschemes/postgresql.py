@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""versioning.postgresql module
+"""verschemes.postgresql module
 
 The PostgreSQL versioning module implements standard
 `PostgreSQL <http://www.postgresql.org/>`_
