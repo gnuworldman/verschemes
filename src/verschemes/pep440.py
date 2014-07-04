@@ -12,9 +12,9 @@ hyphen and a numeric version (as implemented by the defaults in the base
 
 """
 
-from . import SegmentDefinition as _SegmentDefinition
-from . import SegmentField as _SegmentField
-from . import Version as _Version
+from verschemes import SegmentDefinition as _SegmentDefinition
+from verschemes import SegmentField as _SegmentField
+from verschemes import Version as _Version
 
 
 RELEASE_SEGMENTS = (
