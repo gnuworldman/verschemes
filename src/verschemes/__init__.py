@@ -9,7 +9,7 @@ import collections as _collections
 from functools import total_ordering as _total_ordering
 import re as _re
 
-from ._version import __version__, __version_info__
+from verschemes._version import __version__, __version_info__
 
 
 DEFAULT_FIELD_TYPE = int
@@ -141,7 +141,7 @@ class SegmentDefinition(_SegmentDefinition):
     def re_pattern(self):
         """The regular expression pattern for the segment's possible string
         representations."""
-        return "".join([x.re_pattern for x in self.fields])
+        return "".join(['(?:{})'.format(x.re_pattern) for x in self.fields])
 
     def validate_value(self, value):
         """Validate the given value and return the value as the inner type.
