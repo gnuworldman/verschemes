@@ -2,7 +2,7 @@
 
 import unittest
 
-from versioning.python import *
+from verschemes.python import *
 
 
 class PythonVersionTestCase(unittest.TestCase):
@@ -78,6 +78,34 @@ class PythonVersionTestCase(unittest.TestCase):
         self.assertEqual(('+', None), version[3])
         self.assertRaises(IndexError, version.__getitem__, 4)
         self.assertEqual(version, PythonVersion('2.7.8+'))
+
+    def test_valid_string_minor(self):
+        version = PythonVersion('3.4')
+        self.assertEqual(3, version[0])
+        self.assertEqual(4, version[1])
+        self.assertEqual(None, version[2])
+        self.assertEqual(None, version[3])
+
+    def test_valid_string_micro(self):
+        version = PythonVersion('3.4.1')
+        self.assertEqual(3, version[0])
+        self.assertEqual(4, version[1])
+        self.assertEqual(1, version[2])
+        self.assertEqual(None, version[3])
+
+    def test_valid_string_development(self):
+        version = PythonVersion('3.4.1c1')
+        self.assertEqual(3, version[0])
+        self.assertEqual(4, version[1])
+        self.assertEqual(1, version[2])
+        self.assertEqual(('c', 1), version[3])
+
+    def test_valid_string_nonrelease(self):
+        version = PythonVersion('3.4.1+')
+        self.assertEqual(3, version[0])
+        self.assertEqual(4, version[1])
+        self.assertEqual(1, version[2])
+        self.assertEqual(('+', None), version[3])
 
     def test_valid_development_minor_comparison(self):
         self.assertEqual(PythonMinorVersion(2, 3),
