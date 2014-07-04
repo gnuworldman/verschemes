@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Purpose of the versioning library &mdash; versioning 1.0.0 documentation</title>
+    <title>Purpose of the verschemes library &mdash; verschemes 1.0.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="versioning 1.0.0 documentation" href="index.html" />
-    <link rel="next" title="API (the versioning package)" href="api.html" />
-    <link rel="prev" title="Python versioning library documentation" href="index.html" /> 
+    <link rel="top" title="verschemes 1.0.0 documentation" href="index.html" />
+    <link rel="next" title="API (the verschemes package)" href="api.html" />
+    <link rel="prev" title="Python verschemes library documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,12 +38,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="api.html" title="API (the versioning package)"
+          <a href="api.html" title="API (the verschemes package)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Python versioning library documentation"
+          <a href="index.html" title="Python verschemes library documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">versioning 1.0.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">verschemes 1.0.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -52,8 +52,8 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="purpose-of-the-versioning-library">
-<h1>Purpose of the versioning library<a class="headerlink" href="#purpose-of-the-versioning-library" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="purpose-of-the-verschemes-library">
+<h1>Purpose of the verschemes library<a class="headerlink" href="#purpose-of-the-verschemes-library" title="Permalink to this headline">¶</a></h1>
 <p>Most versioned components have their own method of identifying their versions.
 This method is often termed &#8220;versioning&#8221; or called a &#8220;version scheme&#8221;.  The
 method is simply a set of rules that dictate what is a valid version identifier
@@ -75,15 +75,15 @@ segments within the hierarchy.</p>
 </ul>
 <p>The most common version identifiers are simply an ordered set of integers
 separated by dots.  The default implementation in the
-<a class="reference internal" href="api.html#versioning.Version" title="versioning.Version"><tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt></a> class provides this common use case with any
+<a class="reference internal" href="api.html#verschemes.Version" title="verschemes.Version"><tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt></a> class provides this common use case with any
 number of segments.  To create an instance of &#8220;version 1.4.2&#8221;, one can write
 <tt class="docutils literal"><span class="pre">Version(1,</span> <span class="pre">4,</span> <span class="pre">2)</span></tt> or <tt class="docutils literal"><span class="pre">Version('1.4.2')</span></tt>
-(after <tt class="docutils literal"><span class="pre">from</span> <span class="pre">versioning</span> <span class="pre">import</span> <span class="pre">Version</span></tt>, of course).</p>
+(after <tt class="docutils literal"><span class="pre">from</span> <span class="pre">verschemes</span> <span class="pre">import</span> <span class="pre">Version</span></tt>, of course).</p>
 <p>Some version schemes are more involved and require using subclasses of
 <tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> to represent them.  Each subclass of <tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> represents a specific
 version scheme, whereas each instance of a <tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> subclass represents a
 specific version that follows the class&#8217;s scheme.</p>
-<p>There are several version schemes implemented in the versioning library, and
+<p>There are several version schemes implemented in the verschemes library, and
 more are sure to be added (submissions are welcome).  These implementations
 also work as examples for those wishing to subclass <tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> for their own
 (or another&#8217;s) version scheme.</p>
@@ -97,10 +97,10 @@ also work as examples for those wishing to subclass <tt class="xref py py-obj do
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">Python versioning library documentation</a></p>
+                        title="previous chapter">Python verschemes library documentation</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="api.html"
-                        title="next chapter">API (the versioning package)</a></p>
+                        title="next chapter">API (the verschemes package)</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/purpose.txt"
@@ -133,12 +133,12 @@ also work as examples for those wishing to subclass <tt class="xref py py-obj do
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="api.html" title="API (the versioning package)"
+          <a href="api.html" title="API (the verschemes package)"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Python versioning library documentation"
+          <a href="index.html" title="Python verschemes library documentation"
              >previous</a> |</li>
-        <li><a href="index.html">versioning 1.0.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">verschemes 1.0.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

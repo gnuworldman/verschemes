@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>versioning &mdash; versioning 1.0.0 documentation</title>
+    <title>verschemes &mdash; verschemes 1.0.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="versioning 1.0.0 documentation" href="../index.html" />
+    <link rel="top" title="verschemes 1.0.0 documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">versioning 1.0.0 documentation</a> &raquo;</li>
+        <li><a href="../index.html">verschemes 1.0.0 documentation</a> &raquo;</li>
           <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -46,9 +46,9 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for versioning</h1><div class="highlight"><pre>
+  <h1>Source code for verschemes</h1><div class="highlight"><pre>
 <span class="c"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;versioning module</span>
+<span class="sd">&quot;&quot;&quot;verschemes module</span>
 
 <span class="sd">This module can be used to manage and enforce rules for version numbering.</span>
 
@@ -58,7 +58,7 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">total_ordering</span> <span class="k">as</span> <span class="n">_total_ordering</span>
 <span class="kn">import</span> <span class="nn">re</span> <span class="kn">as</span> <span class="nn">_re</span>
 
-<span class="kn">from</span> <span class="nn">._version</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__version_info__</span>
+<span class="kn">from</span> <span class="nn">verschemes._version</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__version_info__</span>
 
 
 <span class="n">DEFAULT_FIELD_TYPE</span> <span class="o">=</span> <span class="nb">int</span>
@@ -103,7 +103,7 @@
 <span class="n">_SegmentDefinition</span> <span class="o">=</span> <span class="n">_collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;_SegmentDefinition&#39;</span><span class="p">,</span>
     <span class="s">&#39;optional default separator fields&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SegmentDefinition"><a class="viewcode-back" href="../api.html#versioning.SegmentDefinition">[docs]</a><span class="k">class</span> <span class="nc">SegmentDefinition</span><span class="p">(</span><span class="n">_SegmentDefinition</span><span class="p">):</span>
+<div class="viewcode-block" id="SegmentDefinition"><a class="viewcode-back" href="../api.html#verschemes.SegmentDefinition">[docs]</a><span class="k">class</span> <span class="nc">SegmentDefinition</span><span class="p">(</span><span class="n">_SegmentDefinition</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;The definition of a version segment.</span>
 
@@ -187,12 +187,12 @@
         <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="SegmentDefinition.re_pattern"><a class="viewcode-back" href="../api.html#versioning.SegmentDefinition.re_pattern">[docs]</a>    <span class="k">def</span> <span class="nf">re_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SegmentDefinition.re_pattern"><a class="viewcode-back" href="../api.html#verschemes.SegmentDefinition.re_pattern">[docs]</a>    <span class="k">def</span> <span class="nf">re_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The regular expression pattern for the segment&#39;s possible string</span>
 <span class="sd">        representations.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">re_pattern</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">])</span>
+        <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;(?:{})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">re_pattern</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">])</span>
 </div>
-<div class="viewcode-block" id="SegmentDefinition.validate_value"><a class="viewcode-back" href="../api.html#versioning.SegmentDefinition.validate_value">[docs]</a>    <span class="k">def</span> <span class="nf">validate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="SegmentDefinition.validate_value"><a class="viewcode-back" href="../api.html#verschemes.SegmentDefinition.validate_value">[docs]</a>    <span class="k">def</span> <span class="nf">validate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the given value and return the value as the inner type.</span>
 
 <span class="sd">        The given value may be a tuple of field values or a string that shall</span>
@@ -207,7 +207,7 @@
             <span class="k">return</span> <span class="n">value</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="SegmentDefinition.render"><a class="viewcode-back" href="../api.html#versioning.SegmentDefinition.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="SegmentDefinition.render"><a class="viewcode-back" href="../api.html#verschemes.SegmentDefinition.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the given segment value as a string.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span>
                 <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
@@ -217,7 +217,7 @@
 
 
 <span class="nd">@_total_ordering</span>
-<div class="viewcode-block" id="Version"><a class="viewcode-back" href="../api.html#versioning.Version">[docs]</a><span class="k">class</span> <span class="nc">Version</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Version"><a class="viewcode-back" href="../api.html#verschemes.Version">[docs]</a><span class="k">class</span> <span class="nc">Version</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;A class whose instances adhere to versioning rules it defines.</span>
 
@@ -283,9 +283,9 @@
                 <span class="k">return</span> <span class="n">other_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="o">==</span> <span class="n">other</span>
             <span class="c"># TODO: Manufacture a test case for Python 2 to execute after</span>
             <span class="c"># this point if possible.</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>  <span class="c"># pragma: no cover</span>
                 <span class="k">pass</span>
-            <span class="k">return</span> <span class="bp">False</span>
+            <span class="k">return</span> <span class="bp">False</span>  <span class="c"># pragma: no cover</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[:]</span> <span class="o">==</span> <span class="n">other</span><span class="p">[:]</span>
 
     <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -423,7 +423,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_definition_slice</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">optional</span> <span class="ow">and</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Version.render"><a class="viewcode-back" href="../api.html#versioning.Version.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_defaults</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">include_callbacks</span><span class="o">=</span><span class="p">(),</span>
+<div class="viewcode-block" id="Version.render"><a class="viewcode-back" href="../api.html#verschemes.Version.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_defaults</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">include_callbacks</span><span class="o">=</span><span class="p">(),</span>
                <span class="n">exclude_callbacks</span><span class="o">=</span><span class="p">()):</span>
         <span class="sd">&quot;&quot;&quot;Render the version into a string representation.</span>
 
@@ -445,10 +445,10 @@
 <span class="sd">        this interests you.)</span>
 
 <span class="sd">        The signature of this method should be considered the most volatile in</span>
-<span class="sd">        the versioning module.  The callback arguments should never be passed</span>
-<span class="sd">        by position to keep the code prepared for injection of additional</span>
-<span class="sd">        simple arguments in the base implementation that are more likely to be</span>
-<span class="sd">        passed by position.</span>
+<span class="sd">        the project.  The callback arguments should never be passed by position</span>
+<span class="sd">        to keep the code prepared for injection of additional simple arguments</span>
+<span class="sd">        in the base implementation that are more likely to be passed by</span>
+<span class="sd">        position.</span>
 
 <span class="sd">        **Callback structure**</span>
 
@@ -542,7 +542,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">versioning 1.0.0 documentation</a> &raquo;</li>
+        <li><a href="../index.html">verschemes 1.0.0 documentation</a> &raquo;</li>
           <li><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

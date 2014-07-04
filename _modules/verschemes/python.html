@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>versioning.python &mdash; versioning 1.0.0 documentation</title>
+    <title>verschemes.python &mdash; verschemes 1.0.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="versioning 1.0.0 documentation" href="../../index.html" />
-    <link rel="up" title="versioning" href="../versioning.html" /> 
+    <link rel="top" title="verschemes 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="verschemes" href="../verschemes.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,9 +36,9 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">versioning 1.0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">verschemes 1.0.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
-          <li><a href="../versioning.html" accesskey="U">versioning</a> &raquo;</li> 
+          <li><a href="../verschemes.html" accesskey="U">verschemes</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -47,9 +47,9 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for versioning.python</h1><div class="highlight"><pre>
+  <h1>Source code for verschemes.python</h1><div class="highlight"><pre>
 <span class="c"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;versioning.python module</span>
+<span class="sd">&quot;&quot;&quot;verschemes.python module</span>
 
 <span class="sd">The Python versioning module implements standard</span>
 <span class="sd">`Python &lt;https://www.python.org/&gt;`_</span>
@@ -57,22 +57,35 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">SegmentDefinition</span> <span class="k">as</span> <span class="n">_SegmentDefinition</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">SegmentField</span> <span class="k">as</span> <span class="n">_SegmentField</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Version</span> <span class="k">as</span> <span class="n">_Version</span>
+<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentDefinition</span> <span class="k">as</span> <span class="n">_SegmentDefinition</span>
+<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentField</span> <span class="k">as</span> <span class="n">_SegmentField</span>
+<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">Version</span> <span class="k">as</span> <span class="n">_Version</span>
 
 
 <span class="n">SEGMENTS</span> <span class="o">=</span> <span class="p">(</span><span class="n">MAJOR</span><span class="p">,</span> <span class="n">MINOR</span><span class="p">,</span> <span class="n">MICRO</span><span class="p">,</span> <span class="n">SUFFIX</span><span class="p">)</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="PythonMajorVersion"><a class="viewcode-back" href="../../api.html#versioning.python.PythonMajorVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonMajorVersion</span><span class="p">(</span><span class="n">_Version</span><span class="p">):</span>
+<div class="viewcode-block" id="PythonMajorVersion"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonMajorVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonMajorVersion</span><span class="p">(</span><span class="n">_Version</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;A major Python version.</span>
+
+<span class="sd">    This version scheme has one segment that identifies the major Python</span>
+<span class="sd">    version, which is only incremented for really major changes in the</span>
+<span class="sd">    language.  It is the base for the more detailed Python version classes and</span>
+<span class="sd">    is mostly only useful itself for comparison.  For example:</span>
+
+<span class="sd">    &gt;&gt;&gt; python2 = PythonMajorVersion(2)</span>
+<span class="sd">    &gt;&gt;&gt; my_python_version = PythonVersion(&#39;2.7.1&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; assert(my_python_version.major_version == python2)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">_SegmentDefinition</span><span class="p">(),</span>
     <span class="p">)</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="PythonMajorVersion.major_version"><a class="viewcode-back" href="../../api.html#versioning.python.PythonMajorVersion.major_version">[docs]</a>    <span class="k">def</span> <span class="nf">major_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PythonMajorVersion.major_version"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonMajorVersion.major_version">[docs]</a>    <span class="k">def</span> <span class="nf">major_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return a new `PythonMajorVersion` with the object&#39;s values.</span>
 
 <span class="sd">        This is mainly useful in subclasses.</span>
@@ -81,14 +94,28 @@
         <span class="k">return</span> <span class="n">PythonMajorVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">MAJOR</span><span class="p">])</span>
 
 </div></div>
-<div class="viewcode-block" id="PythonMinorVersion"><a class="viewcode-back" href="../../api.html#versioning.python.PythonMinorVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonMinorVersion</span><span class="p">(</span><span class="n">PythonMajorVersion</span><span class="p">):</span>
+<div class="viewcode-block" id="PythonMinorVersion"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonMinorVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonMinorVersion</span><span class="p">(</span><span class="n">PythonMajorVersion</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;A minor Python version.</span>
+
+<span class="sd">    This version scheme has two segments that identify the minor Python</span>
+<span class="sd">    version, which is incremented for less earth-shattering changes in the</span>
+<span class="sd">    language than a major version increment.  It is the base for the more</span>
+<span class="sd">    detailed Python version classes and is mostly only useful itself for</span>
+<span class="sd">    comparison.  For example:</span>
+
+<span class="sd">    &gt;&gt;&gt; python33 = PythonMinorVersion(3, 3)</span>
+<span class="sd">    &gt;&gt;&gt; my_python_version = PythonVersion(3, 4, 2)</span>
+<span class="sd">    &gt;&gt;&gt; assert(my_python_version.minor_version &gt; python33)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="n">PythonMajorVersion</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span> <span class="o">+</span> <span class="p">(</span>
         <span class="n">_SegmentDefinition</span><span class="p">(),</span>
     <span class="p">)</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="PythonMinorVersion.minor_version"><a class="viewcode-back" href="../../api.html#versioning.python.PythonMinorVersion.minor_version">[docs]</a>    <span class="k">def</span> <span class="nf">minor_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PythonMinorVersion.minor_version"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonMinorVersion.minor_version">[docs]</a>    <span class="k">def</span> <span class="nf">minor_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return a new `PythonMinorVersion` with the object&#39;s values.</span>
 
 <span class="sd">        This is mainly useful in subclasses.</span>
@@ -97,7 +124,21 @@
         <span class="k">return</span> <span class="n">PythonMinorVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">MAJOR</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="n">MINOR</span><span class="p">])</span>
 
 </div></div>
-<div class="viewcode-block" id="PythonMicroVersion"><a class="viewcode-back" href="../../api.html#versioning.python.PythonMicroVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonMicroVersion</span><span class="p">(</span><span class="n">PythonMinorVersion</span><span class="p">):</span>
+<div class="viewcode-block" id="PythonMicroVersion"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonMicroVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonMicroVersion</span><span class="p">(</span><span class="n">PythonMinorVersion</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;A micro Python version.</span>
+
+<span class="sd">    This version scheme has three segments that identify the micro Python</span>
+<span class="sd">    version, which is incremented for each bugfix release (see `PEP 6</span>
+<span class="sd">    &lt;http://legacy.python.org/dev/peps/pep-0006/&gt;`_).  It is the base for the</span>
+<span class="sd">    more detailed Python version classes and is mostly only useful itself for</span>
+<span class="sd">    comparison.  For example:</span>
+
+<span class="sd">    &gt;&gt;&gt; python301 = PythonMicroVersion(3, 0, 1)</span>
+<span class="sd">    &gt;&gt;&gt; my_python_version = PythonVersion(3, 0, 1, (&#39;b&#39;, 1))</span>
+<span class="sd">    &gt;&gt;&gt; assert(my_python_version.micro_version == python301)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="n">PythonMinorVersion</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span> <span class="o">+</span> <span class="p">(</span>
         <span class="n">_SegmentDefinition</span><span class="p">(</span>
@@ -106,7 +147,7 @@
     <span class="p">)</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="PythonMicroVersion.micro_version"><a class="viewcode-back" href="../../api.html#versioning.python.PythonMicroVersion.micro_version">[docs]</a>    <span class="k">def</span> <span class="nf">micro_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PythonMicroVersion.micro_version"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonMicroVersion.micro_version">[docs]</a>    <span class="k">def</span> <span class="nf">micro_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return a new `PythonMicroVersion` with the object&#39;s values.</span>
 
 <span class="sd">        This is mainly useful in subclasses.</span>
@@ -115,7 +156,15 @@
         <span class="k">return</span> <span class="n">PythonMicroVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">MAJOR</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="n">MINOR</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="n">MICRO</span><span class="p">])</span>
 
 </div></div>
-<div class="viewcode-block" id="PythonVersion"><a class="viewcode-back" href="../../api.html#versioning.python.PythonVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonVersion</span><span class="p">(</span><span class="n">PythonMicroVersion</span><span class="p">):</span>
+<div class="viewcode-block" id="PythonVersion"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonVersion</span><span class="p">(</span><span class="n">PythonMicroVersion</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;A complete, specific Python version.</span>
+
+<span class="sd">    This version scheme has four segments that identify a specific version of</span>
+<span class="sd">    Python.  See the link in the module documentation for details about the</span>
+<span class="sd">    Python version scheme.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="n">PythonMicroVersion</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span> <span class="o">+</span> <span class="p">(</span>
         <span class="n">_SegmentDefinition</span><span class="p">(</span>
@@ -137,14 +186,34 @@
     <span class="p">)</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="PythonVersion.is_nondevelopment"><a class="viewcode-back" href="../../api.html#versioning.python.PythonVersion.is_nondevelopment">[docs]</a>    <span class="k">def</span> <span class="nf">is_nondevelopment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PythonVersion.is_nondevelopment"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonVersion.is_nondevelopment">[docs]</a>    <span class="k">def</span> <span class="nf">is_nondevelopment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Whether this version represents a non-development release.</span>
 
-<span class="sd">        This simply says whether it is equivalent to its `major_version`; that</span>
+<span class="sd">        This simply says whether it is equivalent to its `micro_version`; that</span>
 <span class="sd">        is, whether the `SUFFIX`-index value is `None`.</span>
 
+<span class="sd">        &gt;&gt;&gt; assert(PythonVersion(&#39;3.4.1&#39;).is_nondevelopment)</span>
+<span class="sd">        &gt;&gt;&gt; assert(not PythonVersion(&#39;3.4.1c1&#39;).is_nondevelopment)</span>
+<span class="sd">        &gt;&gt;&gt; assert(not PythonVersion(&#39;3.4.1+&#39;).is_nondevelopment)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">SUFFIX</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">SUFFIX</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="PythonVersion.is_release"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonVersion.is_release">[docs]</a>    <span class="k">def</span> <span class="nf">is_release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Whether this version represents a release.</span>
+
+<span class="sd">        This simply says whether the `SUFFIX`-index value is not &#39;+&#39;.  A &#39;+&#39;</span>
+<span class="sd">        indicates that it is an unreleased version, built directly from the</span>
+<span class="sd">        Subversion trunk; anything else is a release (be it development or</span>
+<span class="sd">        non-development).</span>
+
+<span class="sd">        &gt;&gt;&gt; assert(PythonVersion(&#39;3.4.1&#39;).is_release)</span>
+<span class="sd">        &gt;&gt;&gt; assert(PythonVersion(&#39;3.4.1c1&#39;).is_release)</span>
+<span class="sd">        &gt;&gt;&gt; assert(not PythonVersion(&#39;3.4.1+&#39;).is_release)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">SUFFIX</span><span class="p">]</span> <span class="o">!=</span> <span class="p">(</span><span class="s">&#39;+&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -178,9 +247,9 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">versioning 1.0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">verschemes 1.0.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
-          <li><a href="../versioning.html" >versioning</a> &raquo;</li> 
+          <li><a href="../verschemes.html" >verschemes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>versioning.postgresql &mdash; versioning 1.0.0 documentation</title>
+    <title>verschemes.postgresql &mdash; verschemes 1.0.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="versioning 1.0.0 documentation" href="../../index.html" />
-    <link rel="up" title="versioning" href="../versioning.html" /> 
+    <link rel="top" title="verschemes 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="verschemes" href="../verschemes.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,9 +36,9 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">versioning 1.0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">verschemes 1.0.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
-          <li><a href="../versioning.html" accesskey="U">versioning</a> &raquo;</li> 
+          <li><a href="../verschemes.html" accesskey="U">verschemes</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -47,9 +47,9 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for versioning.postgresql</h1><div class="highlight"><pre>
+  <h1>Source code for verschemes.postgresql</h1><div class="highlight"><pre>
 <span class="c"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;versioning.postgresql module</span>
+<span class="sd">&quot;&quot;&quot;verschemes.postgresql module</span>
 
 <span class="sd">The PostgreSQL versioning module implements standard</span>
 <span class="sd">`PostgreSQL &lt;http://www.postgresql.org/&gt;`_</span>
@@ -57,14 +57,28 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">SegmentDefinition</span> <span class="k">as</span> <span class="n">_SegmentDefinition</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Version</span> <span class="k">as</span> <span class="n">_Version</span>
+<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentDefinition</span> <span class="k">as</span> <span class="n">_SegmentDefinition</span>
+<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">Version</span> <span class="k">as</span> <span class="n">_Version</span>
 
 
 <span class="n">SEGMENTS</span> <span class="o">=</span> <span class="p">(</span><span class="n">MAJOR1</span><span class="p">,</span> <span class="n">MAJOR2</span><span class="p">,</span> <span class="n">MINOR</span><span class="p">)</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="PgMajorVersion"><a class="viewcode-back" href="../../api.html#versioning.postgresql.PgMajorVersion">[docs]</a><span class="k">class</span> <span class="nc">PgMajorVersion</span><span class="p">(</span><span class="n">_Version</span><span class="p">):</span>
+<div class="viewcode-block" id="PgMajorVersion"><a class="viewcode-back" href="../../api.html#verschemes.postgresql.PgMajorVersion">[docs]</a><span class="k">class</span> <span class="nc">PgMajorVersion</span><span class="p">(</span><span class="n">_Version</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;A major PostgreSQL version.</span>
+
+<span class="sd">    This version scheme has two segments that identify the major PostgreSQL</span>
+<span class="sd">    version, which includes new features and requires a dump/reload of the</span>
+<span class="sd">    database or use of the pg_upgrade module.  It is the base for the more</span>
+<span class="sd">    detailed PostgreSQL version classes and is mostly only useful itself for</span>
+<span class="sd">    comparison.  For example:</span>
+
+<span class="sd">    &gt;&gt;&gt; pg83 = PgMajorVersion(8.3)</span>
+<span class="sd">    &gt;&gt;&gt; my_version = PgVersion(&#39;8.3.4&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; assert(my_version.major_version == pg83)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">_SegmentDefinition</span><span class="p">(),</span>
@@ -72,7 +86,7 @@
     <span class="p">)</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="PgMajorVersion.major_version"><a class="viewcode-back" href="../../api.html#versioning.postgresql.PgMajorVersion.major_version">[docs]</a>    <span class="k">def</span> <span class="nf">major_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PgMajorVersion.major_version"><a class="viewcode-back" href="../../api.html#verschemes.postgresql.PgMajorVersion.major_version">[docs]</a>    <span class="k">def</span> <span class="nf">major_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return a new `PgMajorVersion` with the object&#39;s values.</span>
 
 <span class="sd">        This is mainly useful in subclasses.</span>
@@ -81,7 +95,14 @@
         <span class="k">return</span> <span class="n">PgMajorVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">MAJOR1</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="n">MAJOR2</span><span class="p">])</span>
 
 </div></div>
-<div class="viewcode-block" id="PgVersion"><a class="viewcode-back" href="../../api.html#versioning.postgresql.PgVersion">[docs]</a><span class="k">class</span> <span class="nc">PgVersion</span><span class="p">(</span><span class="n">PgMajorVersion</span><span class="p">):</span>
+<div class="viewcode-block" id="PgVersion"><a class="viewcode-back" href="../../api.html#verschemes.postgresql.PgVersion">[docs]</a><span class="k">class</span> <span class="nc">PgVersion</span><span class="p">(</span><span class="n">PgMajorVersion</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;A complete, specific PostgreSQL version.</span>
+
+<span class="sd">    This version scheme has three segments that identify a specific release of</span>
+<span class="sd">    PostgreSQL.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="n">PgMajorVersion</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span> <span class="o">+</span> <span class="p">(</span>
         <span class="n">_SegmentDefinition</span><span class="p">(</span><span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
@@ -119,9 +140,9 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">versioning 1.0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">verschemes 1.0.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
-          <li><a href="../versioning.html" >versioning</a> &raquo;</li> 
+          <li><a href="../verschemes.html" >verschemes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
