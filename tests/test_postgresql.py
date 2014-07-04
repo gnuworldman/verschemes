@@ -2,7 +2,7 @@
 
 import unittest
 
-from versioning.postgresql import *
+from verschemes.postgresql import *
 
 
 class PgVersionTestCase(unittest.TestCase):

@@ -2,7 +2,7 @@
 
 import unittest
 
-from versioning.pep440 import *
+from verschemes.pep440 import *
 
 
 class Pep440VersionTestCase(unittest.TestCase):

@@ -3,7 +3,7 @@
 import operator
 import unittest
 
-from versioning import *
+from verschemes import *
 
 
 class SegmentFieldTestCase(unittest.TestCase):
@@ -108,9 +108,9 @@ class VersionTestCase(unittest.TestCase):
 
     def test_repr(self):
         version = Version(3, 5, 8, 13)
-        self.assertEqual("versioning.Version(3, 5, 8, 13)", repr(version))
+        self.assertEqual("verschemes.Version(3, 5, 8, 13)", repr(version))
         version = Version('3.5.8.13')
-        self.assertEqual("versioning.Version(3, 5, 8, 13)", repr(version))
+        self.assertEqual("verschemes.Version(3, 5, 8, 13)", repr(version))
 
     def test_eq(self):
         self.assertEqual(Version('8.13.21'), Version(8, 13, 21))

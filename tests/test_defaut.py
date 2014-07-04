@@ -2,7 +2,7 @@
 
 import unittest
 
-from versioning import Version
+from verschemes import Version
 
 
 class DefaultVersionTestCase(unittest.TestCase):
