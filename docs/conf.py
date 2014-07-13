@@ -70,7 +70,7 @@ copyright = '2014, Craig Hurd-Rindy'
 exec(open(os.path.join(_PROJECT_PATH, 'src', 'verschemes', '_version.py'))
      .read())
 # The short X.Y version.
-version = '.'.join([str(x) for x in __version_info__[:2]])
+version = '.'.join(str(x) for x in __version_info__[:2])
 # The full version, including alpha/beta/rc tags.
 release = __version__
 

@@ -112,7 +112,7 @@ class Pep440Version(_Version):
 
     @property
     def is_release(self):
-        return all([self[x] is None for x in NONRELEASE_SEGMENTS])
+        return all(self[x] is None for x in NONRELEASE_SEGMENTS)
 
     def _render_exclude_defaults_callback(self, index, scope=None):
         if scope is None:

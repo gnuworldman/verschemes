@@ -107,10 +107,10 @@ class SegmentDefinition(_SegmentDefinition):
         elif (not isinstance(fields, tuple) and
               isinstance(fields, _collections.Iterable)):
             fields = tuple(fields)
-        if not all([isinstance(x, SegmentField) for x in fields]):
+        if not all(isinstance(x, SegmentField) for x in fields):
             raise ValueError(
                 "Fields must be of type {}.".format(SegmentField))
-        if len(set([x.name for x in fields])) < len(fields):
+        if len(set(x.name for x in fields)) < len(fields):
             raise ValueError(
                 "Field names must be unique within a segment definition.")
         if default is not None:
@@ -133,10 +133,10 @@ class SegmentDefinition(_SegmentDefinition):
                     .format(len(values), len(fields), values))
             while len(values) < len(fields):
                 values.append(None)
-            value_string = "".join([x.render(None if y is None else x.type(y))
-                                    for x, y in zip(fields, values)])
-        re_pattern = '^' + "".join(['(?P<{}>{})'.format(x.name, x.re_pattern)
-                                    for x in fields]) + '$'
+            value_string = "".join(x.render(None if y is None else x.type(y))
+                                   for x, y in zip(fields, values))
+        re_pattern = '^' + "".join('(?P<{}>{})'.format(x.name, x.re_pattern)
+                                   for x in fields) + '$'
         match = _re.match(re_pattern, value_string)
         if not match:
             raise ValueError(
@@ -152,7 +152,7 @@ class SegmentDefinition(_SegmentDefinition):
     def re_pattern(self):
         """The regular expression pattern for the segment's possible string
         representations."""
-        return "".join(['(?:{})'.format(x.re_pattern) for x in self.fields])
+        return "".join('(?:{})'.format(x.re_pattern) for x in self.fields)
 
     def validate_value(self, value):
         """Validate the given value and return the value as the inner type.
@@ -172,8 +172,8 @@ class SegmentDefinition(_SegmentDefinition):
     def render(self, value):
         """Return the given segment value as a string."""
         return (self.fields[0].render(value) if len(self.fields) == 1 else
-                "".join([self.fields[i].render(value[i])
-                         for i in range(len(self.fields))]))
+                "".join(self.fields[i].render(value[i])
+                        for i in range(len(self.fields))))
 
 DEFAULT_SEGMENT_DEFINITION = SegmentDefinition()
 
@@ -229,7 +229,7 @@ class Version(object):
     def __repr__(self):
         cls = type(self)
         return ("{}.{}(".format(cls.__module__, cls.__name__) +
-                ", ".join([repr(x) for x in self._values]) + ")")
+                ", ".join(repr(x) for x in self._values) + ")")
 
     def __str__(self):
         return self.render()
@@ -285,8 +285,8 @@ class Version(object):
         if result is None:
             if not (isinstance(cls.SEGMENT_DEFINITIONS,
                                _collections.Iterable) and
-                    all([isinstance(x, SegmentDefinition)
-                         for x in cls.SEGMENT_DEFINITIONS])):
+                    all(isinstance(x, SegmentDefinition)
+                        for x in cls.SEGMENT_DEFINITIONS)):
                 raise TypeError(
                     "SEGMENT_DEFINITIONS for {} is not a sequence of "
                     "SegmentDefinitions."
@@ -305,7 +305,7 @@ class Version(object):
                 re_segment = ""
                 if i > 0:
                     re_segment += "(?:" + _re.escape(d.separator) + ")"
-                    if all([x.optional for x in definitions[:i]]):
+                    if all(x.optional for x in definitions[:i]):
                         re_segment += "?"
                 re_segment += "(?P<segment{}>{})".format(i, d.re_pattern)
                 if d.optional:
@@ -372,8 +372,8 @@ class Version(object):
         if scope is None:
             scope = range(len(self._values))
         if index in scope:
-            if any([self._values[i] is not None
-                    for i in range(index, max(scope) + 1)]):
+            if any(self._values[i] is not None
+                   for i in range(index, max(scope) + 1)):
                 return False
         return (self._get_definition_slice(index).optional and
                 self._values[index] is None)
