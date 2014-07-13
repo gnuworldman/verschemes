@@ -5,9 +5,19 @@ This module can be used to manage and enforce rules for version numbering.
 
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import collections as _collections
 from functools import total_ordering as _total_ordering
 import re as _re
+
+from future.builtins import map
+from future.builtins import str
+from future.builtins import zip
+from future.builtins import range
+from future.builtins import object
+from future.builtins import super
 
 from verschemes._version import __version__, __version_info__
 
@@ -105,7 +115,7 @@ class SegmentDefinition(_SegmentDefinition):
                 "Field names must be unique within a segment definition.")
         if default is not None:
             default = cls._validate_value(default, fields)
-        return super(SegmentDefinition, cls).__new__(cls, bool(optional),
+        return super().__new__(cls, bool(optional),
             default, str(separator), fields)
 
     @staticmethod
@@ -118,8 +128,9 @@ class SegmentDefinition(_SegmentDefinition):
                       [value])
             if len(values) > len(fields):
                 raise ValueError(
-                    "More values were given than fields in the segment "
-                    "definition.")
+                    "More values ({}) were given than fields ({}) in the "
+                    "segment definition.  {}"
+                    .format(len(values), len(fields), values))
             while len(values) < len(fields):
                 values.append(None)
             value_string = "".join([x.render(None if y is None else x.type(y))
@@ -232,11 +243,9 @@ class Version(object):
                 pass
             try:
                 return other_type(str(self)) == other
-            # TODO: Manufacture a test case for Python 2 to execute after
-            # this point if possible.
-            except (TypeError, ValueError):  # pragma: no cover
+            except (TypeError, ValueError):
                 pass
-            return False  # pragma: no cover
+            return False
         return self[:] == other[:]
 
     def __lt__(self, other):
@@ -250,12 +259,7 @@ class Version(object):
                 return other_type(str(self)) < other
             except (TypeError, ValueError):
                 pass
-            # When sys.version_info[:2] >= (3, 4) is all that's supported:
-            # return NotImplemented
-            # Until then, raising this TypeError should be equivalent.
-            raise TypeError(
-                "unorderable types: {}() < {}()"
-                .format(type(self).__name__, other_type.__name__))
+            return NotImplemented
         return self[:] < other[:]
 
     def __getitem__(self, index):

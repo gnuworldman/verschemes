@@ -1,7 +1,13 @@
 """versioning function unit tests"""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import operator
+import sys
 import unittest
+
+from future.builtins import str
 
 from verschemes import *
 
@@ -147,8 +153,11 @@ class VersionTestCase(unittest.TestCase):
         self.assertLess(Version(8, 13), 9.0)
 
     def test_lt_incompatible(self):
-        self.assertRaises(TypeError, operator.lt,
-                          Version(7, 5, 2), complex(7.6, 2))
+        if sys.version_info[0] < 3:
+            self.assertLess(complex(7.6, 2), Version(7, 5, 2))
+        else:
+            self.assertRaises(TypeError, operator.lt,
+                              complex(7.6, 2), Version(7, 5, 2))
 
     def test_lt_different_segment_definitions(self):
         class Version1(Version):

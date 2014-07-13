@@ -13,8 +13,14 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import sys
 import os
+
+from future.builtins import str
+
 
 _PROJECT_PATH = os.path.dirname(os.path.dirname(__file__))
 

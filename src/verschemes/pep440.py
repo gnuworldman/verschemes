@@ -12,6 +12,12 @@ hyphen and a numeric version (as implemented by the defaults in the base
 
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+from future.builtins import range
+from future.builtins import super
+
 from verschemes import SegmentDefinition as _SegmentDefinition
 from verschemes import SegmentField as _SegmentField
 from verschemes import Version as _Version
@@ -94,7 +100,7 @@ class Pep440Version(_Version):
     def __init__(self, epoch_or_string=None, release1=None, release2=None,
                  release3=None, release4=None, release5=None, release6=None,
                  pre_release=None, post_release=None, development=None):
-        _super = super(Pep440Version, self).__init__
+        _super = super().__init__
         if (release1 is None and release2 is None and release3 is None and
             release4 is None and release5 is None and release6 is None and
             pre_release is None and post_release is None and
@@ -112,8 +118,7 @@ class Pep440Version(_Version):
         if scope is None:
             scope = list(RELEASE_SEGMENTS)
             scope.remove(EPOCH)
-        return (super(Pep440Version, self)
-                ._render_exclude_defaults_callback(index, scope))
+        return super()._render_exclude_defaults_callback(index, scope)
 
     def _render_include_min_release_callback(self, index,
                                              min_release_segments):
@@ -128,6 +133,5 @@ class Pep440Version(_Version):
         include_callbacks = list(include_callbacks)
         include_callbacks.append((self._render_include_min_release_callback,
                                   min_release_segments))
-        return super(Pep440Version, self).render(exclude_defaults,
-                                                 include_callbacks,
-                                                 exclude_callbacks)
+        return super().render(exclude_defaults, include_callbacks,
+                              exclude_callbacks)

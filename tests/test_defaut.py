@@ -1,6 +1,12 @@
+# -*- coding: utf-8 -*-
 """default versioning tests"""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import unittest
+
+from future.builtins import str
 
 from verschemes import Version
 

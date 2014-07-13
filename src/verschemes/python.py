@@ -7,12 +7,18 @@ The Python versioning module implements standard
 
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+from future.builtins import str
+from future.builtins import range
+
 from verschemes import SegmentDefinition as _SegmentDefinition
 from verschemes import SegmentField as _SegmentField
 from verschemes import Version as _Version
 
 
-SEGMENTS = (MAJOR, MINOR, MICRO, SUFFIX) = range(4)
+SEGMENTS = (MAJOR, MINOR, MICRO, SUFFIX) = tuple(range(4))
 
 
 class PythonMajorVersion(_Version):

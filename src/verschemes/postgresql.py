@@ -7,11 +7,16 @@ The PostgreSQL versioning module implements standard
 
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+from future.builtins import range
+
 from verschemes import SegmentDefinition as _SegmentDefinition
 from verschemes import Version as _Version
 
 
-SEGMENTS = (MAJOR1, MAJOR2, MINOR) = range(3)
+SEGMENTS = (MAJOR1, MAJOR2, MINOR) = tuple(range(3))
 
 
 class PgMajorVersion(_Version):
