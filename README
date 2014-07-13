@@ -1,3 +1,16 @@
-The verschemes package provides easy and customizable version identifier management in Python.
+verschemes
+==========
 
-See the `documentation <http://gnuworldman.github.io/verschemes/>`_ for details.
+The verschemes package provides easy and customizable version identifier
+management in Python.
+
+See the `documentation <http://gnuworldman.github.io/verschemes/>`_ for
+details.
+
+.. image:: https://travis-ci.org/gnuworldman/verschemes.svg?branch=master
+   :alt: Build Status
+   :target: https://travis-ci.org/gnuworldman/verschemes
+
+.. image:: https://img.shields.io/coveralls/gnuworldman/verschemes.svg
+   :alt: Coverage Status
+   :target: https://coveralls.io/r/gnuworldman/verschemes?branch=master
