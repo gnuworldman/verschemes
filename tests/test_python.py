@@ -123,6 +123,18 @@ class PythonVersionTestCase(unittest.TestCase):
         version = PythonVersion(2, 3, 4, 'b5')
         self.assertFalse(version.is_nondevelopment)
 
+    def test_is_release(self):
+        version = PythonVersion(2, 3)
+        self.assertTrue(version.is_release)
+
+    def test_is_release_dev(self):
+        version = PythonVersion(2, 3, 4, '+')
+        self.assertFalse(version.is_release)
+
+    def test_is_release_beta(self):
+        version = PythonVersion(2, 3, 4, 'b5')
+        self.assertTrue(version.is_release)
+
     def test_invalid_alpha_serial_none(self):
         self.assertRaises(ValueError, PythonVersion, 2, 7, 9, ('a', None))
 
