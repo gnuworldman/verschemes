@@ -12,6 +12,13 @@ if _PY2:  # pragma: no coverage  # pragma: no branch
 
 class int_default_zero(int):
 
+    """Subclass of `int` that defaults to zero.
+
+    If the `x` argument is `False`-equivalent, it is transformed to 0, even if
+    it is not compatible/parsable by `int`.
+
+    """
+
     def __new__(cls, *args, **kwargs):
         if args:
             if not args[0]:
