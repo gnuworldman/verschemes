@@ -21,6 +21,7 @@ doc:
 clean:
 	./setup.py clean -a
 	$(MAKE) -C docs clean
+	$(RM) MANIFEST
 	$(RM) -r dist
 	$(RM) -r htmlcov
 	coverage erase
