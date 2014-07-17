@@ -15,7 +15,14 @@ coverage_html: test
 build:
 	./setup.py build
 
-doc:
+github_readme:
+	test "`head -1 README`" = ".. include:: docs/description.rst"
+	$(RM) README.rst
+	echo 'This file was produced with no help from GitHub, who refuse to implement the include directive or reuse a non-broken reStructuredText processor.  Maybe someday they will realize that DRY does not stand for "Definitely Repeat Yourself" and that it is rude to force workarounds upon your users.\n\nWe now return you to your regularly scheduled program (or library).\n' > README.rst
+	cat docs/description.rst >> README.rst
+	tail -n +2 README >> README.rst
+
+doc: github_readme
 	$(MAKE) -C docs html
 
 clean:
@@ -30,4 +37,4 @@ clean:
 	git submodule update docs/_build/html
 	git -C docs/_build/html checkout gh-pages
 
-.PHONY: test coverage coverage_html build doc clean
+.PHONY: test coverage coverage_html build github_readme doc clean
