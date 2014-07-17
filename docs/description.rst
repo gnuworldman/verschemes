@@ -4,7 +4,7 @@ management in Python.
 The `source <https://github.com/gnuworldman/verschemes/tree/master>`_,
 `documentation <http://gnuworldman.github.io/verschemes/>`_,
 and `issues <https://github.com/gnuworldman/verschemes/issues>`_
-are host on `GitHub <https://github.com/>`_.
+are hosted on `GitHub <https://github.com/>`_.
 
 This is an open-source project by and for the community.  Contributions,
 suggestions, and questions are `welcome <https://twitter.com/BraveGnuWorld>`_
