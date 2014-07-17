@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 """setup.py for the verschemes project"""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import os
 
 from setuptools import setup
@@ -35,6 +38,7 @@ setup(
         'Topic :: Utilities',
         ],
     package_dir={'': 'src'},
-    packages=['verschemes'],
+    packages=['verschemes',
+              'verschemes.future'],
     install_requires=['future'],
     )
