@@ -4,7 +4,7 @@
 all: coverage build doc
 
 test:
-	PYTHONPATH=src coverage run --module unittest discover
+	PYTHONPATH=src coverage run --branch --module unittest discover
 
 coverage: test
 	coverage report
