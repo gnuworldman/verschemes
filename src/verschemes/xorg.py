@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""versioning.xorg module
+"""verschemes.xorg module
 
-The X.org versioning module implements the standard
+The X.org verschemes module implements the standard
 `X.org <http://www.x.org/>`_ `version number scheme
 <http://www.x.org/wiki/Development/Documentation/VersionNumberScheme/>`_.
 
