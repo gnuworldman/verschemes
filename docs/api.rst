@@ -23,3 +23,8 @@ PostgreSQL
 ^^^^^^^^^^
 
 .. automodule:: verschemes.postgresql
+
+X.org
+^^^^^
+
+.. automodule:: verschemes.xorg
