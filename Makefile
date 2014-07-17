@@ -18,7 +18,7 @@ build:
 github_readme:
 	test "`head -1 README`" = ".. include:: docs/description.rst"
 	$(RM) README.rst
-	echo 'This file was produced with no help from GitHub, who refuse to implement the include directive or reuse a non-broken reStructuredText processor.  Maybe someday they will realize that DRY does not stand for "Definitely Repeat Yourself" and that it is rude to force workarounds upon your users.\n\nWe now return you to your regularly scheduled program (or library).\n' > README.rst
+	echo 'This file was produced with no help from GitHub, who refuse to implement the include directive or reuse a non-broken reStructuredText processor.  Maybe someday they will realize that DRY does not stand for "Definitely Repeat Yourself" and that it is rude to force workarounds upon your users.\n\nWe now return you to your regularly scheduled program (or library).\n\nverschemes\n==========\n' > README.rst
 	cat docs/description.rst >> README.rst
 	tail -n +2 README >> README.rst
 

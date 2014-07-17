@@ -2,6 +2,9 @@ This file was produced with no help from GitHub, who refuse to implement the inc
 
 We now return you to your regularly scheduled program (or library).
 
+verschemes
+==========
+
 The verschemes package provides easy and customizable version identifier
 management in Python.
 
