@@ -18,6 +18,10 @@ constructor, which allows the segment value in a `~verschemes.Version` object
 to be accessed via a property of that name and may also be identified by that
 name as a keyword in the constructor and :meth:`~verschemes.Version.replace`.
 
+An implementation of the `X.org <http://www.x.org/>`_ `version number scheme
+<http://www.x.org/wiki/Development/Documentation/VersionNumberScheme/>`_ is now
+included in the `~verschemes.xorg` module.
+
 Version 1.0
 -----------
 
