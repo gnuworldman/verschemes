@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """verschemes.pep440 module
 
-The PEP 440 versioning module implements standard
+The PEP 440 verschemes module implements standard
 `PEP 440 <http://legacy.python.org/dev/peps/pep-0440/>`_
 `public <http://legacy.python.org/dev/peps/pep-0440/#public-version-identifiers>`_
 versioning.  PEP 440
@@ -37,7 +37,7 @@ NONRELEASE_SEGMENTS = (
     PRE_RELEASE,
     POST_RELEASE,
     DEVELOPMENT
-) = tuple(range(-3, 0))
+) = tuple(range(7, 10))
 
 SEGMENTS = RELEASE_SEGMENTS + NONRELEASE_SEGMENTS
 
@@ -45,35 +45,43 @@ SEGMENTS = RELEASE_SEGMENTS + NONRELEASE_SEGMENTS
 class Pep440Version(_Version):
 
     SEGMENT_DEFINITIONS = (
-        _SegmentDefinition(  # EPOCH
+        _SegmentDefinition(
+            name='epoch',
             optional=True,
             default=0,
         ),
-        _SegmentDefinition(  # RELEASE1
+        _SegmentDefinition(
+            name='release1',
             default=0,
             separator=':',
         ),
-        _SegmentDefinition(  # RELEASE2
+        _SegmentDefinition(
+            name='release2',
             optional=True,
             default=0,
         ),
-        _SegmentDefinition(  # RELEASE3
+        _SegmentDefinition(
+            name='release3',
             optional=True,
             default=0,
         ),
-        _SegmentDefinition(  # RELEASE4
+        _SegmentDefinition(
+            name='release4',
             optional=True,
             default=0,
         ),
-        _SegmentDefinition(  # RELEASE5
+        _SegmentDefinition(
+            name='release5',
             optional=True,
             default=0,
         ),
-        _SegmentDefinition(  # RELEASE6
+        _SegmentDefinition(
+            name='release6',
             optional=True,
             default=0,
         ),
-        _SegmentDefinition(  # PRE_RELEASE
+        _SegmentDefinition(
+            name='pre_release',
             optional=True,
             separator='',
             fields=(
@@ -87,31 +95,26 @@ class Pep440Version(_Version):
                 ),
             ),
         ),
-        _SegmentDefinition(  # POST_RELEASE
+        _SegmentDefinition(
+            name='post_release',
             optional=True,
             separator='.post',
         ),
-        _SegmentDefinition(  # DEVELOPMENT
+        _SegmentDefinition(
+            name='development',
             optional=True,
             separator='.dev',
         ),
     )
 
-    def __init__(self, epoch_or_string=None, release1=None, release2=None,
-                 release3=None, release4=None, release5=None, release6=None,
-                 pre_release=None, post_release=None, development=None):
-        _super = super().__init__
-        if (release1 is None and release2 is None and release3 is None and
-            release4 is None and release5 is None and release6 is None and
-            pre_release is None and post_release is None and
-            development is None):
-            _super(epoch_or_string)
-        else:
-            _super(epoch_or_string, release1, release2, release3, release4,
-                   release5, release6, pre_release, post_release, development)
-
     @property
     def is_release(self):
+        """Whether all of the non-release segments have no value.
+
+        The non-release segments are named 'pre_release', 'post_release', and
+        'development'.
+
+        """
         return all(self[x] is None for x in NONRELEASE_SEGMENTS)
 
     def _render_exclude_defaults_callback(self, index, scope=None):
@@ -123,15 +126,13 @@ class Pep440Version(_Version):
     def _render_include_min_release_callback(self, index,
                                              min_release_segments):
         return RELEASE1 <= index < RELEASE1 + min_release_segments
-        # if segment_index < RELEASE1 or segment_index > min_release_segments:
-        #     return False
-        # segment = self.segments[segment_index]
-        # return segment.definition.optional and segment._value is None
 
     def render(self, exclude_defaults=True, include_callbacks=(),
                exclude_callbacks=(), min_release_segments=1):
+        """Override to provide the `min_release_segments` option."""
         include_callbacks = list(include_callbacks)
-        include_callbacks.append((self._render_include_min_release_callback,
-                                  min_release_segments))
+        include_callbacks.append(
+            (type(self)._render_include_min_release_callback,
+             min_release_segments))
         return super().render(exclude_defaults, include_callbacks,
                               exclude_callbacks)

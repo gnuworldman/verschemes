@@ -9,15 +9,18 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import collections as _collections
-from functools import total_ordering as _total_ordering
 import re as _re
+from threading import RLock as _RLock
 
 from future.builtins import map
-from future.builtins import str
-from future.builtins import zip
 from future.builtins import range
-from future.builtins import object
-from future.builtins import super
+from future.builtins import zip
+from future.utils import PY2 as _PY2
+
+# custom future implementations for Python 2
+if _PY2:  # pragma: no coverage  # pragma: no branch
+    from verschemes.future.newstr import newstr as str
+    from verschemes.future.newsuper import newsuper as super
 
 from verschemes._version import __version__, __version_info__
 
@@ -34,7 +37,7 @@ This is an immutable set of metadata defining the parameters of a field in a
 `SegmentDefinition`.
 
 The attributes can be set only in the constructor by name or position and can
-be accessed by attribute name or item index:
+be accessed by attribute name (preferred) or item index:
 
 0. :attr:`type` (default: `int`) is the underlying type of the field value.
 
@@ -62,7 +65,7 @@ DEFAULT_SEGMENT_FIELD = SegmentField()
 
 
 _SegmentDefinition = _collections.namedtuple('_SegmentDefinition',
-    'optional default separator fields')
+    'optional default separator fields name')
 
 class SegmentDefinition(_SegmentDefinition):
 
@@ -71,7 +74,7 @@ class SegmentDefinition(_SegmentDefinition):
     This is an immutable set of metadata defining the parameters of a segment.
 
     The attributes can be set only in the constructor by name or position and
-    can be accessed by attribute name or item index:
+    can be accessed by attribute name (preferred) or item index:
 
     0. :attr:`optional` (default: False) indicates whether the segment may be
        excluded from rendering and whether its value is allowed to be
@@ -89,6 +92,20 @@ class SegmentDefinition(_SegmentDefinition):
     3. :attr:`fields` (default: a singular `SegmentField` instance) is the
        sequence of metadata for the field(s) in the segment.
 
+    4. :attr:`name` (default: None) is an optional name for the segment.
+
+       If the segment name is specified, it must be a valid Python identifier
+       that does not start with an underscore.  This segment can then be
+       identified by this name in the `Version` subclass in which it is used:
+
+       a. The constructor and the `Version.replace` method will accept this
+          name as a keyword argument, overriding the positional argument if
+          also specified.
+       b. There will be a read-only property to access this segment's value if
+          the name is not already used in the class, so don't use a name that
+          matches an existing attribute like 'render' if you want to use this
+          property as an alternative to index access.
+
     """
 
     # This must be specified again to keep this subclass from making __dict__.
@@ -96,7 +113,7 @@ class SegmentDefinition(_SegmentDefinition):
 
     def __new__(cls, optional=False, default=None,
                 separator=DEFAULT_SEGMENT_SEPARATOR,
-                fields=(DEFAULT_SEGMENT_FIELD,)):
+                fields=(DEFAULT_SEGMENT_FIELD,), name=None):
         """Provide default values.
 
         This cannot be done with `__init__` since `self` is immutable.
@@ -115,8 +132,17 @@ class SegmentDefinition(_SegmentDefinition):
                 "Field names must be unique within a segment definition.")
         if default is not None:
             default = cls._validate_value(default, fields)
-        return super().__new__(cls, bool(optional),
-            default, str(separator), fields)
+        if name:
+            if name.startswith('_'):
+                raise ValueError(
+                    "Segment names must not begin with an underscore.")
+            # For Python 2, name must be converted to str to have this method.
+            # if not name.isidentifier():
+            if not str(name).isidentifier():
+                raise ValueError(
+                    "Segment names must be valid identifiers.")
+        return super().__new__(cls, bool(optional), default, str(separator),
+                               fields, str(name) if name else None)
 
     @staticmethod
     def _validate_value(value, fields):
@@ -151,8 +177,22 @@ class SegmentDefinition(_SegmentDefinition):
     @property
     def re_pattern(self):
         """The regular expression pattern for the segment's possible string
-        representations."""
+        representations.
+
+        This is generated from the `~SegmentField.re_pattern`\s of its
+        field(s).
+
+        """
         return "".join('(?:{})'.format(x.re_pattern) for x in self.fields)
+
+    @property
+    def required(self):
+        """Whether a value for this segment is required.
+
+        It is required if it is not optional and has no default value.
+
+        """
+        return not self.optional and self.default is None
 
     def validate_value(self, value):
         """Validate the given value and return the value as the inner type.
@@ -178,18 +218,17 @@ class SegmentDefinition(_SegmentDefinition):
 DEFAULT_SEGMENT_DEFINITION = SegmentDefinition()
 
 
-@_total_ordering
-class Version(object):
+class Version(tuple):
 
-    """A class whose instances adhere to versioning rules it defines.
+    """A class whose instances adhere to the version scheme it defines.
 
     The versioning rules are defined in `SEGMENT_DEFINITIONS`, which may be
-    overridden in a subclass to make it more specific to the versioning rules
+    overridden in a subclass to make it more specific to the version scheme
     represented by the subclass.
 
     The concept is that the class represents a particular set of versioning
-    rules, and the instances of that class are version identifiers that follow
-    those rules.
+    rules (i.e., a version scheme), and the instances of that class are version
+    identifiers that follow those rules.
 
     Pass the constructor either a version identifier as a `str` or the
     individual segment values in order corresponding to the
@@ -197,9 +236,25 @@ class Version(object):
     using the default implementation).  Optional segments and segments with
     default values may be passed a value of `None` or excluded from the end.
 
-    The instance's individual segment values can be accessed or set via
-    standard slicing.  For example, ``instance[0]`` returns the value of the
-    first segment.
+    As of version 1.1, keyword arguments may also be given to the constructor
+    when the keywords match the segments' names.  Any keyword arguments for
+    segments also specified positionally will override the positional
+    arguments.
+
+    The instance's segment values can be accessed via standard indexing,
+    slicing, and keys.  For example, ``instance[0]`` returns the value of the
+    instance's first segment, ``instance[3:5]`` returns a tuple containing the
+    values of the instance's fourth and fifth segments, and since version 1.1
+    ``instance['name']`` returns the value of the segment with name 'name'.
+
+    As of version 1.1, individual segment values can also be accessed via
+    properties if the segment was given a name and the name does not conflict
+    with an existing attribute of the class.
+
+    The segment values acquired from indexing, slicing, keywords, and
+    properties are cooked according to the segment definition (basically
+    returning the default if the raw value is `None`).  The raw values can be
+    accessed with :meth:`get_raw_item`.
 
     """
 
@@ -220,163 +275,200 @@ class Version(object):
 
     """
 
-    def __init__(self, *values):
-        self._values = []
-        if len(values) == 1 and isinstance(values[0], str):
-            values = values[0]
-        self.version = values
+    __class_cache = {}
+    __class_cache_lock = _RLock()
+
+    def __new__(cls, *args, **kwargs):
+        segment_definitions = cls._get_definitions()
+        if len(args) == 1 and isinstance(args[0], str):
+            # Process a version string passed as the only argument.
+            string = args[0]
+            if segment_definitions:
+                re = cls._get_re()
+                match = re.match(string)
+                if not match:
+                    raise ValueError(
+                        "Version string {!r} does not match {!r}."
+                        .format(string, re.pattern))
+                args = match.groups()
+            else:
+                args = string.split(DEFAULT_SEGMENT_SEPARATOR)
+        else:
+            # Validate the given args.
+            args = list(args)
+            if segment_definitions:
+                if len(args) > len(segment_definitions):
+                    raise ValueError(
+                        "There are too many segment values ({}) for the "
+                        "number of segment definitions ({})."
+                        .format(len(args), len(segment_definitions)))
+                while len(args) < len(segment_definitions):
+                    args.append(None)
+            elif not args:
+                raise ValueError(
+                    "One or more values are required when using implicit "
+                    "segment definitions.")
+
+        # Process `kwargs` into `args`.
+        segment_indices = dict([(segment_definitions[i].name, i)
+                                for i in range(len(segment_definitions))
+                                if segment_definitions[i].name])
+        for k, v in kwargs.items():
+            if k not in segment_indices:
+                raise KeyError(
+                    "There is no segment with name {!r}."
+                    .format(k))
+            args[segment_indices[k]] = v
+
+        # Validate and transform the values in `args`.
+        args = [(segment_definitions[i] if segment_definitions else
+                 DEFAULT_SEGMENT_DEFINITION).validate_value(args[i])
+                for i in range(len(args))]
+
+        # Instantiate, validate, and return the new object.
+        result = super().__new__(cls, args)
+        result.validate()
+        return result
+
+    # def __init__(self, *args, **kwargs):
+    #     print("calling super.__init__")
+    #     super().__init__()
 
     def __repr__(self):
         cls = type(self)
         return ("{}.{}(".format(cls.__module__, cls.__name__) +
-                ", ".join(repr(x) for x in self._values) + ")")
+                ", ".join(repr(x) for x in self) + ")")
 
     def __str__(self):
         return self.render()
 
     def __eq__(self, other):
         if not isinstance(other, Version):
-            other_type = type(other)
-            try:
-                return other_type(self) == other
-            except (TypeError, ValueError):
-                pass
-            try:
-                return other_type(str(self)) == other
-            except (TypeError, ValueError):
-                pass
-            return False
+            as_other = self._coerce_to_type(type(other))
+            return False if as_other is None else (as_other == other)
         return self[:] == other[:]
 
     def __lt__(self, other):
         if not isinstance(other, Version):
-            other_type = type(other)
-            try:
-                return other_type(self) < other
-            except (TypeError, ValueError):
-                pass
-            try:
-                return other_type(str(self)) < other
-            except (TypeError, ValueError):
-                pass
-            return NotImplemented
+            as_other = self._coerce_to_type(type(other))
+            return NotImplemented if as_other is None else (as_other < other)
         return self[:] < other[:]
 
-    def __getitem__(self, index):
-        def get(v, d):
-            return v if v is not None else d.default
-        definition = self._get_definition_slice(index)
-        result = self._values[index]
-        if isinstance(index, slice):
-            return tuple(map(get, result, definition))
-        return get(result, definition)
-
-    def __setitem__(self, index, value):
-        def validate(v, d):
-            return d.validate_value(v)
-        definition = self._get_definition_slice(index, value)
-        self._values[index] = (tuple(map(validate, value, definition))
-                               if isinstance(index, slice) else
-                               validate(value, definition))
+    def _coerce_to_type(self, type_):
+        try:
+            return type_(self)
+        except (TypeError, ValueError):
+            pass
+        try:
+            return type_(str(self))
+        except (TypeError, ValueError):
+            pass
 
     @classmethod
     def _get_definitions(cls):
-        result = getattr(cls, '__SEGMENT_DEFINITIONS', None)
-        if result is None:
-            if not (isinstance(cls.SEGMENT_DEFINITIONS,
-                               _collections.Iterable) and
-                    all(isinstance(x, SegmentDefinition)
-                        for x in cls.SEGMENT_DEFINITIONS)):
-                raise TypeError(
-                    "SEGMENT_DEFINITIONS for {} is not a sequence of "
-                    "SegmentDefinitions."
-                    .format(cls))
-            result = cls.__SEGMENT_DEFINITIONS = tuple(cls.SEGMENT_DEFINITIONS)
+        with cls.__class_cache_lock:
+            cache = cls.__class_cache.setdefault(cls, {})
+            result = cache.get('segment_definitions')
+            if result is None:
+                if not (isinstance(cls.SEGMENT_DEFINITIONS,
+                                   _collections.Iterable) and
+                        all(isinstance(x, SegmentDefinition)
+                            for x in cls.SEGMENT_DEFINITIONS)):
+                    raise TypeError(
+                        "SEGMENT_DEFINITIONS for {} is not a sequence of "
+                        "SegmentDefinitions."
+                        .format(cls))
+                names = [x.name for x in cls.SEGMENT_DEFINITIONS if x.name]
+                if len(names) != len(set(names)):
+                    raise ValueError(
+                        "Segment names must be unique.")
+                result = tuple(cls.SEGMENT_DEFINITIONS)
+                # Add properties for segment names.
+                for i, segment in enumerate(result):
+                    name = segment.name
+                    if not name or name in dir(cls):
+                        # no name or already defined
+                        continue
+                    setattr(cls, name, property(lambda o, i=i: o[i]))
+                cache['segment_definitions'] = result
         return result
 
     @classmethod
     def _get_re(cls):
-        result = getattr(cls, '__RE', None)
-        if result is None:
-            definitions = cls._get_definitions()
-            re = ""
-            for i in range(len(definitions)):
-                d = definitions[i]
-                re_segment = ""
-                if i > 0:
-                    re_segment += "(?:" + _re.escape(d.separator) + ")"
-                    if all(x.optional for x in definitions[:i]):
-                        re_segment += "?"
-                re_segment += "(?P<segment{}>{})".format(i, d.re_pattern)
-                if d.optional:
-                    re_segment = "(?:" + re_segment + ")?"
-                re += re_segment
-            result = cls.__RE = _re.compile('^' + re + '$')
+        with cls.__class_cache_lock:
+            cache = cls.__class_cache.setdefault(cls, {})
+            result = cache.get('re')
+            if result is None:
+                definitions = cls._get_definitions()
+                re = ""
+                for i in range(len(definitions)):
+                    d = definitions[i]
+                    re_segment = ""
+                    if i > 0:
+                        re_segment += "(?:" + _re.escape(d.separator) + ")"
+                        if all(not x.required for x in definitions[:i]):
+                            re_segment += "?"
+                    re_segment += "(?P<segment{}>{})".format(i, d.re_pattern)
+                    if not d.required:
+                        re_segment = "(?:" + re_segment + ")?"
+                    re += re_segment
+                cache['re'] = result = _re.compile('^' + re + '$')
         return result
 
-    def _get_definition_slice(self, index, values=None):
+    def _get_segment_definition(self, item=None):
         definitions = self._get_definitions()
         if definitions:
-            return definitions[index]
-        if values is None:
-            values = self._values[index]
-        if isinstance(index, slice):
-            return (DEFAULT_SEGMENT_DEFINITION,) * len(values)
-        return DEFAULT_SEGMENT_DEFINITION
+            if item is not None:
+                if isinstance(item, str):
+                    definitions = dict((x.name, x) for x in definitions
+                                       if x.name)
+                definitions = definitions[item]
+            return definitions
+        return ((DEFAULT_SEGMENT_DEFINITION,) * len(self.get_raw_item(item))
+                if item is None or isinstance(item, slice) else
+                DEFAULT_SEGMENT_DEFINITION)
 
-    def _get_version(self):
-        return str(self)
+    def get_raw_item(self, item=None):
+        """Return the raw segment value (or values if `item` is a slice).
 
-    def _set_version(self, value):
-        segment_definitions = self._get_definitions()
-        if (isinstance(value, str) or
-            not isinstance(value, _collections.Iterable)):
-            value = str(value)
-            if segment_definitions:
-                re = self._get_re()
-                match = re.match(value)
-                if not match:
-                    raise ValueError(
-                        "Version {!r} does not match {!r}."
-                        .format(value, re.pattern))
-                value = match.groups()
-            else:
-                value = value.split(DEFAULT_SEGMENT_SEPARATOR)
-        else:
-            value = list(value)
-            if segment_definitions:
-                if len(value) > len(segment_definitions):
-                    raise ValueError(
-                        "There are too many segment values ({}) for the "
-                        "number of segment definitions ({})."
-                        .format(len(value), len(segment_definitions)))
-                while len(value) < len(segment_definitions):
-                    value.append(None)
-            elif not value:
-                raise ValueError(
-                    "One or more values are required when using implicit "
-                    "segment definitions.")
-        self[:] = value
+        This is an alternative to :meth:`~object.__getitem__` (i.e., bracket
+        item retrieval) and named-segment properties, which cook the value(s)
+        according to their segment definition(s).
 
-    version = property(_get_version, _set_version)
-    """The version representation.
+        """
+        if item is None:
+            item = slice(0, len(self))
+        if isinstance(item, str):
+            for index, definition in enumerate(self._get_definitions()):
+                if definition.name == item:
+                    item = index
+                    break
+            if isinstance(item, str):
+                raise KeyError(item)
+        return super().__getitem__(item)
 
-    This attribute returns the string representation of the version identifier
-    (same as passing the instance to `str`) and can also be used to set all of
-    the segment values at once with a compatible version string or a sequence
-    of values for all non-optional segments.
+    def __getitem__(self, item):
+        def get(v, d):
+            return v if v is not None else d.default
+        definition = self._get_segment_definition(item)
+        value = self.get_raw_item(item)
+        return (tuple(map(get, value, definition))
+                if isinstance(item, slice) else
+                get(value, definition))
 
-    """
+    if _PY2:  # pragma: no coverage  # pragma: no branch
+        def __getslice__(self, i, j):
+            return self.__getitem__(slice(i, j))
 
     def _render_exclude_defaults_callback(self, index, scope=None):
         if scope is None:
-            scope = range(len(self._values))
+            scope = range(len(self))
         if index in scope:
-            if any(self._values[i] is not None
+            if any(self.get_raw_item(i) is not None
                    for i in range(index, max(scope) + 1)):
                 return False
-        return (self._get_definition_slice(index).optional and
-                self._values[index] is None)
+        return (self._get_segment_definition(index).optional and
+                self.get_raw_item(index) is None)
 
     def render(self, exclude_defaults=True, include_callbacks=(),
                exclude_callbacks=()):
@@ -432,10 +524,11 @@ class Version(object):
         include_callbacks = list(include_callbacks)
         exclude_callbacks = list(exclude_callbacks)
         if exclude_defaults:
-            exclude_callbacks.append(self._render_exclude_defaults_callback)
+            exclude_callbacks.append(
+                type(self)._render_exclude_defaults_callback)
 
         def callback_affirmative(callback, index):
-            args = [index]
+            args = [self, index]
             if (not isinstance(callback, _collections.Callable) and
                 isinstance(callback, _collections.Iterable)):
                 args.extend(callback[1:])
@@ -443,8 +536,8 @@ class Version(object):
             return callback(*args)
 
         result = ""
-        definitions = self._get_definition_slice(slice(0, len(self._values)))
-        for i in range(len(self._values)):
+        definitions = self._get_segment_definition()
+        for i in range(len(self)):
             definition = definitions[i]
             value = self[i]
             if definition.optional and value is None:
@@ -464,3 +557,25 @@ class Version(object):
                 result += definition.separator
             result += definition.render(value)
         return result
+
+    def replace(self, **kwargs):
+        """Return a copy of this version with the given segments replaced.
+
+        Each keyword argument can either be an underscore ('_') followed by the
+        numeric segment index or the segment name.  Each identified segment is
+        replaced with the argument's value.  Segment name arguments take
+        precedence over underscore-index arguments.
+
+        """
+        values = list(self.get_raw_item())
+        for k in list(kwargs):
+            if k.startswith('_') and k[1:].isdigit():
+                values[int(k[1:])] = kwargs.pop(k)
+        return type(self)(*values, **kwargs)
+
+    def validate(self):
+        """Override this in subclasses that require intersegment validation.
+
+        Raise an appropriate exception if validation fails.
+
+        """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """verschemes.postgresql module
 
-The PostgreSQL versioning module implements standard
+The PostgreSQL verschemes module implements standard
 `PostgreSQL <http://www.postgresql.org/>`_
 `versioning <http://www.postgresql.org/support/versioning/>`__.
 
@@ -36,8 +36,12 @@ class PgMajorVersion(_Version):
     """
 
     SEGMENT_DEFINITIONS = (
-        _SegmentDefinition(),
-        _SegmentDefinition(),
+        _SegmentDefinition(
+            name='major1',
+        ),
+        _SegmentDefinition(
+            name='major2',
+        ),
     )
 
     @property
@@ -60,5 +64,9 @@ class PgVersion(PgMajorVersion):
     """
 
     SEGMENT_DEFINITIONS = PgMajorVersion.SEGMENT_DEFINITIONS + (
-        _SegmentDefinition(optional=True, default=0),
+        _SegmentDefinition(
+            name='minor',
+            optional=True,
+            default=0,
+        ),
     )

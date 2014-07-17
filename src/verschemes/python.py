@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """verschemes.python module
 
-The Python versioning module implements standard
+The Python verschemes module implements standard
 `Python <https://www.python.org/>`_
 `versioning <https://docs.python.org/3/faq/general.html#how-does-the-python-version-numbering-scheme-work>`__.
 
@@ -37,7 +37,9 @@ class PythonMajorVersion(_Version):
     """
 
     SEGMENT_DEFINITIONS = (
-        _SegmentDefinition(),
+        _SegmentDefinition(
+            name='major',
+        ),
     )
 
     @property
@@ -67,7 +69,9 @@ class PythonMinorVersion(PythonMajorVersion):
     """
 
     SEGMENT_DEFINITIONS = PythonMajorVersion.SEGMENT_DEFINITIONS + (
-        _SegmentDefinition(),
+        _SegmentDefinition(
+            name='minor',
+        ),
     )
 
     @property
@@ -98,7 +102,8 @@ class PythonMicroVersion(PythonMinorVersion):
 
     SEGMENT_DEFINITIONS = PythonMinorVersion.SEGMENT_DEFINITIONS + (
         _SegmentDefinition(
-            optional=True
+            name='micro',
+            optional=True,
         ),
     )
 
@@ -124,6 +129,7 @@ class PythonVersion(PythonMicroVersion):
 
     SEGMENT_DEFINITIONS = PythonMicroVersion.SEGMENT_DEFINITIONS + (
         _SegmentDefinition(
+            name='suffix',
             optional=True,
             separator='',
             fields=(
