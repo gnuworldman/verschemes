@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>verschemes &mdash; verschemes 1.0.0 documentation</title>
+    <title>verschemes &mdash; verschemes 1.1.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.0.0',
+        VERSION:     '1.1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="verschemes 1.0.0 documentation" href="../index.html" />
+    <link rel="top" title="verschemes 1.1.0 documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">verschemes 1.0.0 documentation</a> &raquo;</li>
+        <li><a href="../index.html">verschemes 1.1.0 documentation</a> &raquo;</li>
           <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -54,9 +54,22 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+
 <span class="kn">import</span> <span class="nn">collections</span> <span class="kn">as</span> <span class="nn">_collections</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">total_ordering</span> <span class="k">as</span> <span class="n">_total_ordering</span>
 <span class="kn">import</span> <span class="nn">re</span> <span class="kn">as</span> <span class="nn">_re</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">RLock</span> <span class="k">as</span> <span class="n">_RLock</span>
+
+<span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">map</span>
+<span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">range</span>
+<span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">zip</span>
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">PY2</span> <span class="k">as</span> <span class="n">_PY2</span>
+
+<span class="c"># custom future implementations for Python 2</span>
+<span class="k">if</span> <span class="n">_PY2</span><span class="p">:</span>  <span class="c"># pragma: no coverage  # pragma: no branch</span>
+    <span class="kn">from</span> <span class="nn">verschemes.future.newstr</span> <span class="kn">import</span> <span class="n">newstr</span> <span class="k">as</span> <span class="nb">str</span>
+    <span class="kn">from</span> <span class="nn">verschemes.future.newsuper</span> <span class="kn">import</span> <span class="n">newsuper</span> <span class="k">as</span> <span class="nb">super</span>
 
 <span class="kn">from</span> <span class="nn">verschemes._version</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__version_info__</span>
 
@@ -73,7 +86,7 @@
 <span class="sd">`SegmentDefinition`.</span>
 
 <span class="sd">The attributes can be set only in the constructor by name or position and can</span>
-<span class="sd">be accessed by attribute name or item index:</span>
+<span class="sd">be accessed by attribute name (preferred) or item index:</span>
 
 <span class="sd">0. :attr:`type` (default: `int`) is the underlying type of the field value.</span>
 
@@ -101,7 +114,7 @@
 
 
 <span class="n">_SegmentDefinition</span> <span class="o">=</span> <span class="n">_collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;_SegmentDefinition&#39;</span><span class="p">,</span>
-    <span class="s">&#39;optional default separator fields&#39;</span><span class="p">)</span>
+    <span class="s">&#39;optional default separator fields name&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SegmentDefinition"><a class="viewcode-back" href="../api.html#verschemes.SegmentDefinition">[docs]</a><span class="k">class</span> <span class="nc">SegmentDefinition</span><span class="p">(</span><span class="n">_SegmentDefinition</span><span class="p">):</span>
 
@@ -110,7 +123,7 @@
 <span class="sd">    This is an immutable set of metadata defining the parameters of a segment.</span>
 
 <span class="sd">    The attributes can be set only in the constructor by name or position and</span>
-<span class="sd">    can be accessed by attribute name or item index:</span>
+<span class="sd">    can be accessed by attribute name (preferred) or item index:</span>
 
 <span class="sd">    0. :attr:`optional` (default: False) indicates whether the segment may be</span>
 <span class="sd">       excluded from rendering and whether its value is allowed to be</span>
@@ -128,6 +141,20 @@
 <span class="sd">    3. :attr:`fields` (default: a singular `SegmentField` instance) is the</span>
 <span class="sd">       sequence of metadata for the field(s) in the segment.</span>
 
+<span class="sd">    4. :attr:`name` (default: None) is an optional name for the segment.</span>
+
+<span class="sd">       If the segment name is specified, it must be a valid Python identifier</span>
+<span class="sd">       that does not start with an underscore.  This segment can then be</span>
+<span class="sd">       identified by this name in the `Version` subclass in which it is used:</span>
+
+<span class="sd">       a. The constructor and the `Version.replace` method will accept this</span>
+<span class="sd">          name as a keyword argument, overriding the positional argument if</span>
+<span class="sd">          also specified.</span>
+<span class="sd">       b. There will be a read-only property to access this segment&#39;s value if</span>
+<span class="sd">          the name is not already used in the class, so don&#39;t use a name that</span>
+<span class="sd">          matches an existing attribute like &#39;render&#39; if you want to use this</span>
+<span class="sd">          property as an alternative to index access.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c"># This must be specified again to keep this subclass from making __dict__.</span>
@@ -135,7 +162,7 @@
 
     <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                 <span class="n">separator</span><span class="o">=</span><span class="n">DEFAULT_SEGMENT_SEPARATOR</span><span class="p">,</span>
-                <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="n">DEFAULT_SEGMENT_FIELD</span><span class="p">,)):</span>
+                <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="n">DEFAULT_SEGMENT_FIELD</span><span class="p">,),</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Provide default values.</span>
 
 <span class="sd">        This cannot be done with `__init__` since `self` is immutable.</span>
@@ -146,16 +173,25 @@
         <span class="k">elif</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span>
               <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">_collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)):</span>
             <span class="n">fields</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">SegmentField</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">SegmentField</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s">&quot;Fields must be of type {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">SegmentField</span><span class="p">))</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">]))</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">))</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s">&quot;Field names must be unique within a segment definition.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">default</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">_validate_value</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SegmentDefinition</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">optional</span><span class="p">),</span>
-            <span class="n">default</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">separator</span><span class="p">),</span> <span class="n">fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s">&quot;Segment names must not begin with an underscore.&quot;</span><span class="p">)</span>
+            <span class="c"># For Python 2, name must be converted to str to have this method.</span>
+            <span class="c"># if not name.isidentifier():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s">&quot;Segment names must be valid identifiers.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">optional</span><span class="p">),</span> <span class="n">default</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">separator</span><span class="p">),</span>
+                               <span class="n">fields</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="bp">None</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_validate_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
@@ -167,14 +203,15 @@
                       <span class="p">[</span><span class="n">value</span><span class="p">])</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s">&quot;More values were given than fields in the segment &quot;</span>
-                    <span class="s">&quot;definition.&quot;</span><span class="p">)</span>
+                    <span class="s">&quot;More values ({}) were given than fields ({}) in the &quot;</span>
+                    <span class="s">&quot;segment definition.  {}&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">),</span> <span class="n">values</span><span class="p">))</span>
             <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">):</span>
                 <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
-            <span class="n">value_string</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">None</span> <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">x</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
-                                    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">values</span><span class="p">)])</span>
-        <span class="n">re_pattern</span> <span class="o">=</span> <span class="s">&#39;^&#39;</span> <span class="o">+</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;(?P&lt;{}&gt;{})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">re_pattern</span><span class="p">)</span>
-                                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">])</span> <span class="o">+</span> <span class="s">&#39;$&#39;</span>
+            <span class="n">value_string</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">None</span> <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">x</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+                                   <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span>
+        <span class="n">re_pattern</span> <span class="o">=</span> <span class="s">&#39;^&#39;</span> <span class="o">+</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s">&#39;(?P&lt;{}&gt;{})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">re_pattern</span><span class="p">)</span>
+                                   <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;$&#39;</span>
         <span class="n">match</span> <span class="o">=</span> <span class="n">_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">re_pattern</span><span class="p">,</span> <span class="n">value_string</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -189,8 +226,22 @@
     <span class="nd">@property</span>
 <div class="viewcode-block" id="SegmentDefinition.re_pattern"><a class="viewcode-back" href="../api.html#verschemes.SegmentDefinition.re_pattern">[docs]</a>    <span class="k">def</span> <span class="nf">re_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The regular expression pattern for the segment&#39;s possible string</span>
-<span class="sd">        representations.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;(?:{})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">re_pattern</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">])</span>
+<span class="sd">        representations.</span>
+
+<span class="sd">        This is generated from the `~SegmentField.re_pattern`\s of its</span>
+<span class="sd">        field(s).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s">&#39;(?:{})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">re_pattern</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="SegmentDefinition.required"><a class="viewcode-back" href="../api.html#verschemes.SegmentDefinition.required">[docs]</a>    <span class="k">def</span> <span class="nf">required</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Whether a value for this segment is required.</span>
+
+<span class="sd">        It is required if it is not optional and has no default value.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">optional</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="bp">None</span>
 </div>
 <div class="viewcode-block" id="SegmentDefinition.validate_value"><a class="viewcode-back" href="../api.html#verschemes.SegmentDefinition.validate_value">[docs]</a>    <span class="k">def</span> <span class="nf">validate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the given value and return the value as the inner type.</span>
@@ -210,24 +261,23 @@
 <div class="viewcode-block" id="SegmentDefinition.render"><a class="viewcode-back" href="../api.html#verschemes.SegmentDefinition.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the given segment value as a string.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span>
-                <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">))]))</span>
+                <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">))))</span>
 </div></div>
 <span class="n">DEFAULT_SEGMENT_DEFINITION</span> <span class="o">=</span> <span class="n">SegmentDefinition</span><span class="p">()</span>
 
 
-<span class="nd">@_total_ordering</span>
-<div class="viewcode-block" id="Version"><a class="viewcode-back" href="../api.html#verschemes.Version">[docs]</a><span class="k">class</span> <span class="nc">Version</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Version"><a class="viewcode-back" href="../api.html#verschemes.Version">[docs]</a><span class="k">class</span> <span class="nc">Version</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;A class whose instances adhere to versioning rules it defines.</span>
+    <span class="sd">&quot;&quot;&quot;A class whose instances adhere to the version scheme it defines.</span>
 
 <span class="sd">    The versioning rules are defined in `SEGMENT_DEFINITIONS`, which may be</span>
-<span class="sd">    overridden in a subclass to make it more specific to the versioning rules</span>
+<span class="sd">    overridden in a subclass to make it more specific to the version scheme</span>
 <span class="sd">    represented by the subclass.</span>
 
 <span class="sd">    The concept is that the class represents a particular set of versioning</span>
-<span class="sd">    rules, and the instances of that class are version identifiers that follow</span>
-<span class="sd">    those rules.</span>
+<span class="sd">    rules (i.e., a version scheme), and the instances of that class are version</span>
+<span class="sd">    identifiers that follow those rules.</span>
 
 <span class="sd">    Pass the constructor either a version identifier as a `str` or the</span>
 <span class="sd">    individual segment values in order corresponding to the</span>
@@ -235,9 +285,25 @@
 <span class="sd">    using the default implementation).  Optional segments and segments with</span>
 <span class="sd">    default values may be passed a value of `None` or excluded from the end.</span>
 
-<span class="sd">    The instance&#39;s individual segment values can be accessed or set via</span>
-<span class="sd">    standard slicing.  For example, ``instance[0]`` returns the value of the</span>
-<span class="sd">    first segment.</span>
+<span class="sd">    As of version 1.1, keyword arguments may also be given to the constructor</span>
+<span class="sd">    when the keywords match the segments&#39; names.  Any keyword arguments for</span>
+<span class="sd">    segments also specified positionally will override the positional</span>
+<span class="sd">    arguments.</span>
+
+<span class="sd">    The instance&#39;s segment values can be accessed via standard indexing,</span>
+<span class="sd">    slicing, and keys.  For example, ``instance[0]`` returns the value of the</span>
+<span class="sd">    instance&#39;s first segment, ``instance[3:5]`` returns a tuple containing the</span>
+<span class="sd">    values of the instance&#39;s fourth and fifth segments, and since version 1.1</span>
+<span class="sd">    ``instance[&#39;name&#39;]`` returns the value of the segment with name &#39;name&#39;.</span>
+
+<span class="sd">    As of version 1.1, individual segment values can also be accessed via</span>
+<span class="sd">    properties if the segment was given a name and the name does not conflict</span>
+<span class="sd">    with an existing attribute of the class.</span>
+
+<span class="sd">    The segment values acquired from indexing, slicing, keywords, and</span>
+<span class="sd">    properties are cooked according to the segment definition (basically</span>
+<span class="sd">    returning the default if the raw value is `None`).  The raw values can be</span>
+<span class="sd">    accessed with :meth:`get_raw_item`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -258,170 +324,200 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">values</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">values</span>
+    <span class="n">__class_cache</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">__class_cache_lock</span> <span class="o">=</span> <span class="n">_RLock</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">segment_definitions</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">_get_definitions</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c"># Process a version string passed as the only argument.</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">segment_definitions</span><span class="p">:</span>
+                <span class="n">re</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">_get_re</span><span class="p">()</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s">&quot;Version string {!r} does not match {!r}.&quot;</span>
+                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">pattern</span><span class="p">))</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">DEFAULT_SEGMENT_SEPARATOR</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># Validate the given args.</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">segment_definitions</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">segment_definitions</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s">&quot;There are too many segment values ({}) for the &quot;</span>
+                        <span class="s">&quot;number of segment definitions ({}).&quot;</span>
+                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">segment_definitions</span><span class="p">)))</span>
+                <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">segment_definitions</span><span class="p">):</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s">&quot;One or more values are required when using implicit &quot;</span>
+                    <span class="s">&quot;segment definitions.&quot;</span><span class="p">)</span>
+
+        <span class="c"># Process `kwargs` into `args`.</span>
+        <span class="n">segment_indices</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">segment_definitions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">segment_definitions</span><span class="p">))</span>
+                                <span class="k">if</span> <span class="n">segment_definitions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">segment_indices</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                    <span class="s">&quot;There is no segment with name {!r}.&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+            <span class="n">args</span><span class="p">[</span><span class="n">segment_indices</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">v</span>
+
+        <span class="c"># Validate and transform the values in `args`.</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[(</span><span class="n">segment_definitions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">segment_definitions</span> <span class="k">else</span>
+                 <span class="n">DEFAULT_SEGMENT_DEFINITION</span><span class="p">)</span><span class="o">.</span><span class="n">validate_value</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">))]</span>
+
+        <span class="c"># Instantiate, validate, and return the new object.</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="c"># def __init__(self, *args, **kwargs):</span>
+    <span class="c">#     print(&quot;calling super.__init__&quot;)</span>
+    <span class="c">#     super().__init__()</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="s">&quot;{}.{}(&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="n">cls</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span> <span class="o">+</span>
-                <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">repr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">])</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span><span class="p">)</span>
+                <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Version</span><span class="p">):</span>
-            <span class="n">other_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">other_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="n">other</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-                <span class="k">pass</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">other_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="o">==</span> <span class="n">other</span>
-            <span class="c"># TODO: Manufacture a test case for Python 2 to execute after</span>
-            <span class="c"># this point if possible.</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>  <span class="c"># pragma: no cover</span>
-                <span class="k">pass</span>
-            <span class="k">return</span> <span class="bp">False</span>  <span class="c"># pragma: no cover</span>
+            <span class="n">as_other</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_to_type</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">False</span> <span class="k">if</span> <span class="n">as_other</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">as_other</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[:]</span> <span class="o">==</span> <span class="n">other</span><span class="p">[:]</span>
 
     <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Version</span><span class="p">):</span>
-            <span class="n">other_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">other_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">other</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-                <span class="k">pass</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">other_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">other</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-                <span class="k">pass</span>
-            <span class="c"># When sys.version_info[:2] &gt;= (3, 4) is all that&#39;s supported:</span>
-            <span class="c"># return NotImplemented</span>
-            <span class="c"># Until then, raising this TypeError should be equivalent.</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s">&quot;unorderable types: {}() &lt; {}()&quot;</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">other_type</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
+            <span class="n">as_other</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_to_type</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span> <span class="k">if</span> <span class="n">as_other</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">as_other</span> <span class="o">&lt;</span> <span class="n">other</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[:]</span> <span class="o">&lt;</span> <span class="n">other</span><span class="p">[:]</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">v</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">d</span><span class="o">.</span><span class="n">default</span>
-        <span class="n">definition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_definition_slice</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
-            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">get</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">definition</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">get</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">definition</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="n">validate_value</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="n">definition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_definition_slice</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">validate</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">definition</span><span class="p">))</span>
-                               <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">)</span> <span class="k">else</span>
-                               <span class="n">validate</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">definition</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">_coerce_to_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">type_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">type_</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">pass</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_get_definitions</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="s">&#39;__SEGMENT_DEFINITIONS&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span><span class="p">,</span>
-                               <span class="n">_collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span>
-                    <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">SegmentDefinition</span><span class="p">)</span>
-                         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cls</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span><span class="p">])):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="s">&quot;SEGMENT_DEFINITIONS for {} is not a sequence of &quot;</span>
-                    <span class="s">&quot;SegmentDefinitions.&quot;</span>
-                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cls</span><span class="p">))</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">__SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">cls</span><span class="o">.</span><span class="n">__class_cache_lock</span><span class="p">:</span>
+            <span class="n">cache</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">__class_cache</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;segment_definitions&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span><span class="p">,</span>
+                                   <span class="n">_collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span>
+                        <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">SegmentDefinition</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cls</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span><span class="p">)):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="s">&quot;SEGMENT_DEFINITIONS for {} is not a sequence of &quot;</span>
+                        <span class="s">&quot;SegmentDefinitions.&quot;</span>
+                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cls</span><span class="p">))</span>
+                <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cls</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">)):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s">&quot;Segment names must be unique.&quot;</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span><span class="p">)</span>
+                <span class="c"># Add properties for segment names.</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">segment</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">name</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+                        <span class="c"># no name or already defined</span>
+                        <span class="k">continue</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="n">o</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">:</span> <span class="n">o</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">cache</span><span class="p">[</span><span class="s">&#39;segment_definitions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_get_re</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="s">&#39;__RE&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">definitions</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">_get_definitions</span><span class="p">()</span>
-            <span class="n">re</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">definitions</span><span class="p">)):</span>
-                <span class="n">d</span> <span class="o">=</span> <span class="n">definitions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="n">re_segment</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
-                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">re_segment</span> <span class="o">+=</span> <span class="s">&quot;(?:&quot;</span> <span class="o">+</span> <span class="n">_re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">separator</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span>
-                    <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">optional</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">definitions</span><span class="p">[:</span><span class="n">i</span><span class="p">]]):</span>
-                        <span class="n">re_segment</span> <span class="o">+=</span> <span class="s">&quot;?&quot;</span>
-                <span class="n">re_segment</span> <span class="o">+=</span> <span class="s">&quot;(?P&lt;segment{}&gt;{})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">re_pattern</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">optional</span><span class="p">:</span>
-                    <span class="n">re_segment</span> <span class="o">=</span> <span class="s">&quot;(?:&quot;</span> <span class="o">+</span> <span class="n">re_segment</span> <span class="o">+</span> <span class="s">&quot;)?&quot;</span>
-                <span class="n">re</span> <span class="o">+=</span> <span class="n">re_segment</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">__RE</span> <span class="o">=</span> <span class="n">_re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&#39;^&#39;</span> <span class="o">+</span> <span class="n">re</span> <span class="o">+</span> <span class="s">&#39;$&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">cls</span><span class="o">.</span><span class="n">__class_cache_lock</span><span class="p">:</span>
+            <span class="n">cache</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">__class_cache</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;re&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">definitions</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">_get_definitions</span><span class="p">()</span>
+                <span class="n">re</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">definitions</span><span class="p">)):</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="n">definitions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">re_segment</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">re_segment</span> <span class="o">+=</span> <span class="s">&quot;(?:&quot;</span> <span class="o">+</span> <span class="n">_re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">separator</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span>
+                        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">required</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">definitions</span><span class="p">[:</span><span class="n">i</span><span class="p">]):</span>
+                            <span class="n">re_segment</span> <span class="o">+=</span> <span class="s">&quot;?&quot;</span>
+                    <span class="n">re_segment</span> <span class="o">+=</span> <span class="s">&quot;(?P&lt;segment{}&gt;{})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">re_pattern</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+                        <span class="n">re_segment</span> <span class="o">=</span> <span class="s">&quot;(?:&quot;</span> <span class="o">+</span> <span class="n">re_segment</span> <span class="o">+</span> <span class="s">&quot;)?&quot;</span>
+                    <span class="n">re</span> <span class="o">+=</span> <span class="n">re_segment</span>
+                <span class="n">cache</span><span class="p">[</span><span class="s">&#39;re&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span> <span class="o">=</span> <span class="n">_re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&#39;^&#39;</span> <span class="o">+</span> <span class="n">re</span> <span class="o">+</span> <span class="s">&#39;$&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">def</span> <span class="nf">_get_definition_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_segment_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="n">definitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_definitions</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">definitions</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">definitions</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">DEFAULT_SEGMENT_DEFINITION</span><span class="p">,)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">DEFAULT_SEGMENT_DEFINITION</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">definitions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">definitions</span>
+                                       <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">definitions</span> <span class="o">=</span> <span class="n">definitions</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">definitions</span>
+        <span class="k">return</span> <span class="p">((</span><span class="n">DEFAULT_SEGMENT_DEFINITION</span><span class="p">,)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_raw_item</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">slice</span><span class="p">)</span> <span class="k">else</span>
+                <span class="n">DEFAULT_SEGMENT_DEFINITION</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<div class="viewcode-block" id="Version.get_raw_item"><a class="viewcode-back" href="../api.html#verschemes.Version.get_raw_item">[docs]</a>    <span class="k">def</span> <span class="nf">get_raw_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the raw segment value (or values if `item` is a slice).</span>
 
-    <span class="k">def</span> <span class="nf">_set_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">segment_definitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_definitions</span><span class="p">()</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span>
-            <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">_collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">segment_definitions</span><span class="p">:</span>
-                <span class="n">re</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_re</span><span class="p">()</span>
-                <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s">&quot;Version {!r} does not match {!r}.&quot;</span>
-                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">pattern</span><span class="p">))</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">DEFAULT_SEGMENT_SEPARATOR</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">segment_definitions</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">segment_definitions</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s">&quot;There are too many segment values ({}) for the &quot;</span>
-                        <span class="s">&quot;number of segment definitions ({}).&quot;</span>
-                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">segment_definitions</span><span class="p">)))</span>
-                <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">segment_definitions</span><span class="p">):</span>
-                    <span class="n">value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s">&quot;One or more values are required when using implicit &quot;</span>
-                    <span class="s">&quot;segment definitions.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">value</span>
+<span class="sd">        This is an alternative to :meth:`~object.__getitem__` (i.e., bracket</span>
+<span class="sd">        item retrieval) and named-segment properties, which cook the value(s)</span>
+<span class="sd">        according to their segment definition(s).</span>
 
-    <span class="n">version</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_version</span><span class="p">,</span> <span class="n">_set_version</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;The version representation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">definition</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_definitions</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">definition</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="n">index</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">v</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">d</span><span class="o">.</span><span class="n">default</span>
+        <span class="n">definition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_segment_definition</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_raw_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">get</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">definition</span><span class="p">))</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">slice</span><span class="p">)</span> <span class="k">else</span>
+                <span class="n">get</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">definition</span><span class="p">))</span>
 
-<span class="sd">    This attribute returns the string representation of the version identifier</span>
-<span class="sd">    (same as passing the instance to `str`) and can also be used to set all of</span>
-<span class="sd">    the segment values at once with a compatible version string or a sequence</span>
-<span class="sd">    of values for all non-optional segments.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">_PY2</span><span class="p">:</span>  <span class="c"># pragma: no coverage  # pragma: no branch</span>
+        <span class="k">def</span> <span class="nf">__getslice__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_render_exclude_defaults_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">scope</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">scope</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">))</span>
+            <span class="n">scope</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">scope</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
-                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]):</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_raw_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+                   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)):</span>
                 <span class="k">return</span> <span class="bp">False</span>
-        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_definition_slice</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">optional</span> <span class="ow">and</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_segment_definition</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">optional</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_raw_item</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Version.render"><a class="viewcode-back" href="../api.html#verschemes.Version.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_defaults</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">include_callbacks</span><span class="o">=</span><span class="p">(),</span>
                <span class="n">exclude_callbacks</span><span class="o">=</span><span class="p">()):</span>
@@ -477,10 +573,11 @@
         <span class="n">include_callbacks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">include_callbacks</span><span class="p">)</span>
         <span class="n">exclude_callbacks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">exclude_callbacks</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">exclude_defaults</span><span class="p">:</span>
-            <span class="n">exclude_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_render_exclude_defaults_callback</span><span class="p">)</span>
+            <span class="n">exclude_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_render_exclude_defaults_callback</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">callback_affirmative</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">]</span>
             <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">_collections</span><span class="o">.</span><span class="n">Callable</span><span class="p">)</span> <span class="ow">and</span>
                 <span class="nb">isinstance</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">_collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)):</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">callback</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
@@ -488,8 +585,8 @@
             <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
-        <span class="n">definitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_definition_slice</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)))</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)):</span>
+        <span class="n">definitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_segment_definition</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
             <span class="n">definition</span> <span class="o">=</span> <span class="n">definitions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">definition</span><span class="o">.</span><span class="n">optional</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -508,7 +605,29 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">+=</span> <span class="n">definition</span><span class="o">.</span><span class="n">separator</span>
             <span class="n">result</span> <span class="o">+=</span> <span class="n">definition</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span></div></div>
+        <span class="k">return</span> <span class="n">result</span>
+</div>
+<div class="viewcode-block" id="Version.replace"><a class="viewcode-back" href="../api.html#verschemes.Version.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a copy of this version with the given segments replaced.</span>
+
+<span class="sd">        Each keyword argument can either be an underscore (&#39;_&#39;) followed by the</span>
+<span class="sd">        numeric segment index or the segment name.  Each identified segment is</span>
+<span class="sd">        replaced with the argument&#39;s value.  Segment name arguments take</span>
+<span class="sd">        precedence over underscore-index arguments.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_raw_item</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                <span class="n">values</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="o">*</span><span class="n">values</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Version.validate"><a class="viewcode-back" href="../api.html#verschemes.Version.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Override this in subclasses that require intersegment validation.</span>
+
+<span class="sd">        Raise an appropriate exception if validation fails.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span></div></div>
 </pre></div>
 
           </div>
@@ -542,7 +661,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">verschemes 1.0.0 documentation</a> &raquo;</li>
+        <li><a href="../index.html">verschemes 1.1.0 documentation</a> &raquo;</li>
           <li><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

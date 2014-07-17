@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>verschemes.postgresql &mdash; verschemes 1.0.0 documentation</title>
+    <title>verschemes.postgresql &mdash; verschemes 1.1.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.0.0',
+        VERSION:     '1.1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="verschemes 1.0.0 documentation" href="../../index.html" />
+    <link rel="top" title="verschemes 1.1.0 documentation" href="../../index.html" />
     <link rel="up" title="verschemes" href="../verschemes.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">verschemes 1.0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">verschemes 1.1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../verschemes.html" accesskey="U">verschemes</a> &raquo;</li> 
       </ul>
@@ -51,17 +51,22 @@
 <span class="c"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;verschemes.postgresql module</span>
 
-<span class="sd">The PostgreSQL versioning module implements standard</span>
+<span class="sd">The PostgreSQL verschemes module implements standard</span>
 <span class="sd">`PostgreSQL &lt;http://www.postgresql.org/&gt;`_</span>
 <span class="sd">`versioning &lt;http://www.postgresql.org/support/versioning/&gt;`__.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+
+<span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">range</span>
+
 <span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentDefinition</span> <span class="k">as</span> <span class="n">_SegmentDefinition</span>
 <span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">Version</span> <span class="k">as</span> <span class="n">_Version</span>
 
 
-<span class="n">SEGMENTS</span> <span class="o">=</span> <span class="p">(</span><span class="n">MAJOR1</span><span class="p">,</span> <span class="n">MAJOR2</span><span class="p">,</span> <span class="n">MINOR</span><span class="p">)</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">SEGMENTS</span> <span class="o">=</span> <span class="p">(</span><span class="n">MAJOR1</span><span class="p">,</span> <span class="n">MAJOR2</span><span class="p">,</span> <span class="n">MINOR</span><span class="p">)</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="PgMajorVersion"><a class="viewcode-back" href="../../api.html#verschemes.postgresql.PgMajorVersion">[docs]</a><span class="k">class</span> <span class="nc">PgMajorVersion</span><span class="p">(</span><span class="n">_Version</span><span class="p">):</span>
@@ -81,8 +86,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(),</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;major1&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;major2&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -105,7 +114,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="n">PgMajorVersion</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span> <span class="o">+</span> <span class="p">(</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span><span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;minor&#39;</span><span class="p">,</span>
+            <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">),</span>
     <span class="p">)</span></div>
 </pre></div>
 
@@ -140,7 +153,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">verschemes 1.0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">verschemes 1.1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../verschemes.html" >verschemes</a> &raquo;</li> 
       </ul>

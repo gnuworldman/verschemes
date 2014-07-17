@@ -3,8 +3,7 @@
 Python verschemes library documentation
 =======================================
 
-The `verschemes` package provides easy and customizable version identifier
-management in Python.
+.. include:: description.rst
 
 Contents:
 
@@ -12,7 +11,9 @@ Contents:
    :maxdepth: 4
 
    purpose
+   installation
    api
+   notes
 
 
 Indices and tables

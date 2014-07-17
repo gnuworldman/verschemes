@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>verschemes.pep440 &mdash; verschemes 1.0.0 documentation</title>
+    <title>verschemes.pep440 &mdash; verschemes 1.1.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.0.0',
+        VERSION:     '1.1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="verschemes 1.0.0 documentation" href="../../index.html" />
+    <link rel="top" title="verschemes 1.1.0 documentation" href="../../index.html" />
     <link rel="up" title="verschemes" href="../verschemes.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">verschemes 1.0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">verschemes 1.1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../verschemes.html" accesskey="U">verschemes</a> &raquo;</li> 
       </ul>
@@ -51,7 +51,7 @@
 <span class="c"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;verschemes.pep440 module</span>
 
-<span class="sd">The PEP 440 versioning module implements standard</span>
+<span class="sd">The PEP 440 verschemes module implements standard</span>
 <span class="sd">`PEP 440 &lt;http://legacy.python.org/dev/peps/pep-0440/&gt;`_</span>
 <span class="sd">`public &lt;http://legacy.python.org/dev/peps/pep-0440/#public-version-identifiers&gt;`_</span>
 <span class="sd">versioning.  PEP 440</span>
@@ -61,6 +61,12 @@
 <span class="sd">`verschemes.Version` class) appended.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+
+<span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">range</span>
+<span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">super</span>
 
 <span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentDefinition</span> <span class="k">as</span> <span class="n">_SegmentDefinition</span>
 <span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentField</span> <span class="k">as</span> <span class="n">_SegmentField</span>
@@ -81,7 +87,7 @@
     <span class="n">PRE_RELEASE</span><span class="p">,</span>
     <span class="n">POST_RELEASE</span><span class="p">,</span>
     <span class="n">DEVELOPMENT</span>
-<span class="p">)</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="p">)</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 
 <span class="n">SEGMENTS</span> <span class="o">=</span> <span class="n">RELEASE_SEGMENTS</span> <span class="o">+</span> <span class="n">NONRELEASE_SEGMENTS</span>
 
@@ -89,35 +95,43 @@
 <div class="viewcode-block" id="Pep440Version"><a class="viewcode-back" href="../../api.html#verschemes.pep440.Pep440Version">[docs]</a><span class="k">class</span> <span class="nc">Pep440Version</span><span class="p">(</span><span class="n">_Version</span><span class="p">):</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>  <span class="c"># EPOCH</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;epoch&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>  <span class="c"># RELEASE1</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;release1&#39;</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">separator</span><span class="o">=</span><span class="s">&#39;:&#39;</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>  <span class="c"># RELEASE2</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;release2&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>  <span class="c"># RELEASE3</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;release3&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>  <span class="c"># RELEASE4</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;release4&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>  <span class="c"># RELEASE5</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;release5&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>  <span class="c"># RELEASE6</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;release6&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>  <span class="c"># PRE_RELEASE</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;pre_release&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">separator</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
             <span class="n">fields</span><span class="o">=</span><span class="p">(</span>
@@ -131,56 +145,47 @@
                 <span class="p">),</span>
             <span class="p">),</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>  <span class="c"># POST_RELEASE</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;post_release&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">separator</span><span class="o">=</span><span class="s">&#39;.post&#39;</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>  <span class="c"># DEVELOPMENT</span>
+        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;development&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">separator</span><span class="o">=</span><span class="s">&#39;.dev&#39;</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch_or_string</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">release1</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">release2</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                 <span class="n">release3</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">release4</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">release5</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">release6</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                 <span class="n">pre_release</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">post_release</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">development</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="n">_super</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Pep440Version</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">release1</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">release2</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">release3</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span>
-            <span class="n">release4</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">release5</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">release6</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span>
-            <span class="n">pre_release</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">post_release</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span>
-            <span class="n">development</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
-            <span class="n">_super</span><span class="p">(</span><span class="n">epoch_or_string</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">_super</span><span class="p">(</span><span class="n">epoch_or_string</span><span class="p">,</span> <span class="n">release1</span><span class="p">,</span> <span class="n">release2</span><span class="p">,</span> <span class="n">release3</span><span class="p">,</span> <span class="n">release4</span><span class="p">,</span>
-                   <span class="n">release5</span><span class="p">,</span> <span class="n">release6</span><span class="p">,</span> <span class="n">pre_release</span><span class="p">,</span> <span class="n">post_release</span><span class="p">,</span> <span class="n">development</span><span class="p">)</span>
-
     <span class="nd">@property</span>
 <div class="viewcode-block" id="Pep440Version.is_release"><a class="viewcode-back" href="../../api.html#verschemes.pep440.Pep440Version.is_release">[docs]</a>    <span class="k">def</span> <span class="nf">is_release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="bp">self</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">NONRELEASE_SEGMENTS</span><span class="p">])</span>
+        <span class="sd">&quot;&quot;&quot;Whether all of the non-release segments have no value.</span>
+
+<span class="sd">        The non-release segments are named &#39;pre_release&#39;, &#39;post_release&#39;, and</span>
+<span class="sd">        &#39;development&#39;.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">NONRELEASE_SEGMENTS</span><span class="p">)</span>
 </div>
     <span class="k">def</span> <span class="nf">_render_exclude_defaults_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">scope</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">scope</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">RELEASE_SEGMENTS</span><span class="p">)</span>
             <span class="n">scope</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">EPOCH</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">Pep440Version</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">_render_exclude_defaults_callback</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">scope</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_render_exclude_defaults_callback</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">scope</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_render_include_min_release_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span>
                                              <span class="n">min_release_segments</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">RELEASE1</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">RELEASE1</span> <span class="o">+</span> <span class="n">min_release_segments</span>
-        <span class="c"># if segment_index &lt; RELEASE1 or segment_index &gt; min_release_segments:</span>
-        <span class="c">#     return False</span>
-        <span class="c"># segment = self.segments[segment_index]</span>
-        <span class="c"># return segment.definition.optional and segment._value is None</span>
 
 <div class="viewcode-block" id="Pep440Version.render"><a class="viewcode-back" href="../../api.html#verschemes.pep440.Pep440Version.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_defaults</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">include_callbacks</span><span class="o">=</span><span class="p">(),</span>
                <span class="n">exclude_callbacks</span><span class="o">=</span><span class="p">(),</span> <span class="n">min_release_segments</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Override to provide the `min_release_segments` option.&quot;&quot;&quot;</span>
         <span class="n">include_callbacks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">include_callbacks</span><span class="p">)</span>
-        <span class="n">include_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_render_include_min_release_callback</span><span class="p">,</span>
-                                  <span class="n">min_release_segments</span><span class="p">))</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Pep440Version</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">exclude_defaults</span><span class="p">,</span>
-                                                 <span class="n">include_callbacks</span><span class="p">,</span>
-                                                 <span class="n">exclude_callbacks</span><span class="p">)</span></div></div>
+        <span class="n">include_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_render_include_min_release_callback</span><span class="p">,</span>
+             <span class="n">min_release_segments</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">exclude_defaults</span><span class="p">,</span> <span class="n">include_callbacks</span><span class="p">,</span>
+                              <span class="n">exclude_callbacks</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -214,7 +219,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">verschemes 1.0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">verschemes 1.1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../verschemes.html" >verschemes</a> &raquo;</li> 
       </ul>

@@ -22,11 +22,10 @@ For example, the following is an ordered list of common version identifiers:
 * 10.0
 
 The most common version identifiers are simply an ordered set of integers
-separated by dots.  The default implementation in the
-`Version <verschemes.Version>` class provides this common use case with any
-number of segments.  To create an instance of "version 1.4.2", one can write
-``Version(1, 4, 2)`` or ``Version('1.4.2')``
-(after ``from verschemes import Version``, of course).
+separated by dots.  The default implementation in the `~verschemes.Version`
+class provides this common use case with any number of segments.  To create an
+instance of "version 1.4.2", one can write ``Version(1, 4, 2)`` or
+``Version('1.4.2')`` (after ``from verschemes import Version``, of course).
 
 Some version schemes are more involved and require using subclasses of
 `Version` to represent them.  Each subclass of `Version` represents a specific
