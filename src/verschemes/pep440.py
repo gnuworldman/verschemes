@@ -10,109 +10,186 @@ versions are not supported by this module; they are just public versions with a
 hyphen and a numeric version (as implemented by the defaults in the base
 `verschemes.Version` class) appended.
 
+This implementation is limited to six release-number segments, which should
+handle any reasonable scheme.
+
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# Support Python 2 & 3.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from verschemes.future import *
 
-from future.builtins import range
-from future.builtins import super
-
-from verschemes import SegmentDefinition as _SegmentDefinition
-from verschemes import SegmentField as _SegmentField
-from verschemes import Version as _Version
+from verschemes import SegmentDefinition, SegmentField, Version
+from verschemes._types import int_empty_zero
 
 
-RELEASE_SEGMENTS = (
+__all__ = []
+
+__all__.extend(['SEGMENTS', 'EPOCH', 'RELEASE1', 'RELEASE2', 'RELEASE3',
+                'RELEASE4', 'RELEASE5', 'RELEASE6', 'PRE_RELEASE',
+                'POST_RELEASE', 'DEVELOPMENT'])
+SEGMENTS = (
     EPOCH,
     RELEASE1,
     RELEASE2,
     RELEASE3,
     RELEASE4,
     RELEASE5,
-    RELEASE6
-) = tuple(range(7))
-
-NONRELEASE_SEGMENTS = (
+    RELEASE6,
     PRE_RELEASE,
     POST_RELEASE,
-    DEVELOPMENT
-) = tuple(range(7, 10))
+    DEVELOPMENT,
+) = tuple(range(10))
 
-SEGMENTS = RELEASE_SEGMENTS + NONRELEASE_SEGMENTS
+__all__.append('RELEASE_SEGMENTS')
+RELEASE_SEGMENTS = SEGMENTS[:PRE_RELEASE]
+
+__all__.append('NONRELEASE_SEGMENTS')
+NONRELEASE_SEGMENTS = SEGMENTS[PRE_RELEASE:]
 
 
-class Pep440Version(_Version):
+def _pre_release_level_render(value):
+    value = value.lower()
+    if len(value) > 1:
+        if value == 'rc':
+            value = 'c'
+        else:
+            value = value[0]
+    return value
+
+
+__all__.append('Pep440Version')
+class Pep440Version(Version):
+
+    """A PEP 440 public version.
+
+    The version scheme has an optional `epoch` segment followed by up to six
+    release-number segments (named 'releaseX', where X is 1-6) followed by the
+    optional `pre_release`, `post_release`, and `development` segments.
+
+    `~verschemes.Version.SEGMENT_DEFINITIONS` contains the following named
+    segments in order:
+
+    * epoch: optional=True, default=0
+
+    * release1: default=0, separator='!'
+
+    * release2: optional=True, default=0
+
+    * release3: optional=True, default=0
+
+    * release4: optional=True, default=0
+
+    * release5: optional=True, default=0
+
+    * release6: optional=True, default=0
+
+    * pre_release: optional=True, separator='', separator_re_pattern='[.-]?'
+        * field 'level': type=str (case-insensitive input)
+            * normal form 'a' accepts 'a' or 'alpha'
+            * normal form 'b' accepts 'b' or 'beta'
+            * normal form 'c' accepts 'c' or 'rc'
+        * field 'serial': type=int_empty_zero, re_pattern='[0-9]*'
+
+    * post_release: optional=True, separator='.post', separator_re_pattern='[.-]?post'
+        * field: type=int_empty_zero, re_pattern='[0-9]*'
+
+    * development: optional=True, separator='.dev', separator_re_pattern='[.-]?dev'
+        * field: type=int_empty_zero, re_pattern='[0-9]*'
+
+    """
 
     SEGMENT_DEFINITIONS = (
-        _SegmentDefinition(
+        SegmentDefinition(
             name='epoch',
             optional=True,
             default=0,
         ),
-        _SegmentDefinition(
+        SegmentDefinition(
             name='release1',
             default=0,
-            separator=':',
+            separator='!',
         ),
-        _SegmentDefinition(
+        SegmentDefinition(
             name='release2',
             optional=True,
             default=0,
         ),
-        _SegmentDefinition(
+        SegmentDefinition(
             name='release3',
             optional=True,
             default=0,
         ),
-        _SegmentDefinition(
+        SegmentDefinition(
             name='release4',
             optional=True,
             default=0,
         ),
-        _SegmentDefinition(
+        SegmentDefinition(
             name='release5',
             optional=True,
             default=0,
         ),
-        _SegmentDefinition(
+        SegmentDefinition(
             name='release6',
             optional=True,
             default=0,
         ),
-        _SegmentDefinition(
+        SegmentDefinition(
             name='pre_release',
             optional=True,
             separator='',
+            separator_re_pattern='[.-]?',
             fields=(
-                _SegmentField(
+                SegmentField(
                     type=str,
                     name='level',
-                    re_pattern='[abc]|rc',
+                    re_pattern=('[aAbBcC]|'
+                                '[aA][lL][pP][hH][aA]|'
+                                '[bB][eE][tT][aA]|'
+                                '[rR][cC]'),
+                    render=_pre_release_level_render
                 ),
-                _SegmentField(
+                SegmentField(
+                    type=int_empty_zero,
                     name='serial',
+                    re_pattern='[0-9]*',
                 ),
             ),
         ),
-        _SegmentDefinition(
+        SegmentDefinition(
             name='post_release',
             optional=True,
             separator='.post',
+            separator_re_pattern='[.-]?post',
+            fields=(
+                SegmentField(
+                    type=int_empty_zero,
+                    re_pattern='[0-9]*',
+                ),
+            ),
         ),
-        _SegmentDefinition(
+        SegmentDefinition(
             name='development',
             optional=True,
             separator='.dev',
+            separator_re_pattern='[.-]?dev',
+            fields=(
+                SegmentField(
+                    type=int_empty_zero,
+                    re_pattern='[0-9]*',
+                ),
+            ),
         ),
     )
 
     @property
     def is_release(self):
-        """Whether all of the non-release segments have no value.
+        """Whether this version represents a final release.
 
-        The non-release segments are named 'pre_release', 'post_release', and
-        'development'.
+        Return `True` if all of the 'pre_release', 'post_release', and
+        'development' segments have no value.
 
         """
         return all(self[x] is None for x in NONRELEASE_SEGMENTS)

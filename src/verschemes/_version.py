@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """verschemes._version module"""
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# Support Python 2 & 3.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 
 __version_info__ = (1, 1, 0)

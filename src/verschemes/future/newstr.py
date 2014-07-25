@@ -1,10 +1,17 @@
+# -*- coding: utf-8 -*-
 """Custom future.types.newstr stuff."""
 
-from future.types.newstr import newstr as _newstr
-from future.utils import isidentifier as _isidentifier
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
+from future.types.newstr import newstr as str
+from future import utils
 
 
-class newstr(_newstr):
+__all__ = ['newstr']
+
+
+class newstr(str):
 
     """Fix for :class:`~future.types.newstr.newstr`.
 
@@ -14,4 +21,4 @@ class newstr(_newstr):
     """
 
     def isidentifier(self):
-        return _isidentifier(self)
+        return utils.isidentifier(self)

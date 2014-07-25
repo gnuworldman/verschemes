@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """default implementation verschemes tests"""
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# Support Python 2 & 3.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from verschemes.future import *
 
 import unittest
-
-from future.builtins import str
 
 from verschemes import Version
 
@@ -77,7 +77,3 @@ class DefaultVersionTestCase(unittest.TestCase):
 
     def test_invalid_extra_segment_values(self):
         self.assertRaises(ValueError, Version, (2, 8))
-
-
-if __name__ == '__main__':
-    unittest.main()

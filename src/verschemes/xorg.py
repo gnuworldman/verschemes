@@ -10,10 +10,17 @@ the minor number as well when preparing for a [major].0 full release.
 
 """
 
-from verschemes import SegmentDefinition as _SegmentDefinition
-from verschemes import Version as _Version
+# Support Python 2 & 3.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from verschemes.future import *
+
+from verschemes import SegmentDefinition, Version
 
 
+__all__ = []
+
+__all__.extend(['SEGMENTS', 'MAJOR', 'MINOR', 'PATCH', 'SNAPSHOT'])
 SEGMENTS = (
     MAJOR,
     MINOR,
@@ -21,25 +28,29 @@ SEGMENTS = (
     SNAPSHOT,
 ) = tuple(range(4))
 
+__all__.append('PRE_FULL_RELEASE')
 PRE_FULL_RELEASE = 99
+
+__all__.append('BRANCH_START_SNAPSHOT')
 BRANCH_START_SNAPSHOT = 900
 
 
-class XorgVersion(_Version):
+__all__.append('XorgVersion')
+class XorgVersion(Version):
 
     SEGMENT_DEFINITIONS = (
-        _SegmentDefinition(
+        SegmentDefinition(
             name='major',
         ),
-        _SegmentDefinition(
+        SegmentDefinition(
             name='minor',
             default=0,
         ),
-        _SegmentDefinition(
+        SegmentDefinition(
             name='patch',
             default=0,
         ),
-        _SegmentDefinition(
+        SegmentDefinition(
             name='snapshot',
             optional=True,
             default=0,

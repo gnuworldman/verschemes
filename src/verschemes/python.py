@@ -7,21 +7,22 @@ The Python verschemes module implements standard
 
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# Support Python 2 & 3.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from verschemes.future import *
 
-from future.builtins import str
-from future.builtins import range
-
-from verschemes import SegmentDefinition as _SegmentDefinition
-from verschemes import SegmentField as _SegmentField
-from verschemes import Version as _Version
+from verschemes import SegmentDefinition, SegmentField, Version
 
 
+__all__ = []
+
+__all__.extend(['SEGMENTS', 'MAJOR', 'MINOR', 'MICRO', 'SUFFIX'])
 SEGMENTS = (MAJOR, MINOR, MICRO, SUFFIX) = tuple(range(4))
 
 
-class PythonMajorVersion(_Version):
+__all__.append('PythonMajorVersion')
+class PythonMajorVersion(Version):
 
     """A major Python version.
 
@@ -37,7 +38,7 @@ class PythonMajorVersion(_Version):
     """
 
     SEGMENT_DEFINITIONS = (
-        _SegmentDefinition(
+        SegmentDefinition(
             name='major',
         ),
     )
@@ -52,6 +53,7 @@ class PythonMajorVersion(_Version):
         return PythonMajorVersion(self[MAJOR])
 
 
+__all__.append('PythonMinorVersion')
 class PythonMinorVersion(PythonMajorVersion):
 
     """A minor Python version.
@@ -69,7 +71,7 @@ class PythonMinorVersion(PythonMajorVersion):
     """
 
     SEGMENT_DEFINITIONS = PythonMajorVersion.SEGMENT_DEFINITIONS + (
-        _SegmentDefinition(
+        SegmentDefinition(
             name='minor',
         ),
     )
@@ -84,6 +86,7 @@ class PythonMinorVersion(PythonMajorVersion):
         return PythonMinorVersion(self[MAJOR], self[MINOR])
 
 
+__all__.append('PythonMicroVersion')
 class PythonMicroVersion(PythonMinorVersion):
 
     """A micro Python version.
@@ -101,7 +104,7 @@ class PythonMicroVersion(PythonMinorVersion):
     """
 
     SEGMENT_DEFINITIONS = PythonMinorVersion.SEGMENT_DEFINITIONS + (
-        _SegmentDefinition(
+        SegmentDefinition(
             name='micro',
             optional=True,
         ),
@@ -117,6 +120,7 @@ class PythonMicroVersion(PythonMinorVersion):
         return PythonMicroVersion(self[MAJOR], self[MINOR], self[MICRO])
 
 
+__all__.append('PythonVersion')
 class PythonVersion(PythonMicroVersion):
 
     """A complete, specific Python version.
@@ -128,17 +132,17 @@ class PythonVersion(PythonMicroVersion):
     """
 
     SEGMENT_DEFINITIONS = PythonMicroVersion.SEGMENT_DEFINITIONS + (
-        _SegmentDefinition(
+        SegmentDefinition(
             name='suffix',
             optional=True,
             separator='',
             fields=(
-                _SegmentField(
+                SegmentField(
                     type=str,
                     name='releaselevel',
                     re_pattern='[+abc]',
                 ),
-                _SegmentField(
+                SegmentField(
                     name='serial',
                     re_pattern='(?<=[+])|(?<![+])(?:0|[1-9][0-9]*)',
                     render=lambda x: "" if x is None else str(x),

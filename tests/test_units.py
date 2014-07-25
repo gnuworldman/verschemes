@@ -1,19 +1,17 @@
 """verschemes unit tests"""
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# Support Python 2 & 3.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from verschemes.future import *
 
 import operator
+import re
 import sys
+import types
 import unittest
 
-from future.builtins import str
-from future.utils import PY2
-
-if PY2:
-    from verschemes.future.newsuper import newsuper as super
-
-from verschemes import SegmentDefinition, SegmentField, Version
+from verschemes import SegmentDefinition, SegmentField, Version, _VersionMeta
 
 
 class SegmentFieldTestCase(unittest.TestCase):
@@ -72,6 +70,14 @@ class SegmentDefinitionTestCase(unittest.TestCase):
     def test_init_segment_name_starts_with_underscore(self):
         self.assertRaises(ValueError, SegmentDefinition, name='_oops')
 
+    def test_init_separator_re_pattern_invalid_re(self):
+        self.assertRaises(re.error, SegmentDefinition,
+                          separator_re_pattern='unpaired(parenthesis')
+
+    def test_init_separator_re_pattern_invalid_type(self):
+        self.assertRaises(TypeError, SegmentDefinition,
+                          separator_re_pattern=4)
+
     def test_eq_default(self):
         self.assertEqual(SegmentDefinition(), SegmentDefinition())
 
@@ -115,14 +121,27 @@ class SegmentDefinitionTestCase(unittest.TestCase):
         self.assertRaises(ValueError, sd.validate_value, (1,))
 
 
+class VersionMetaTestCase(unittest.TestCase):
+
+    def test_lack_of_segment_definitions(self):
+        # has valid SEGMENT_DEFINITIONS, so succeeds
+        _VersionMeta('NewVersion', (), dict(SEGMENT_DEFINITIONS=()))
+        # has no SEGMENT_DEFINITIONS, so fails
+        self.assertRaises(TypeError, _VersionMeta, 'NonVersion', (), {})
+        # same but with a base class
+        self.assertRaises(TypeError, _VersionMeta, 'NonVersion', (object,), {})
+
+
 class VersionTestCase(unittest.TestCase):
 
     def test_invalid_segment_definitions(self):
-        class VersionBad(Version):
-            SEGMENT_DEFINITIONS = (
-                'not a SegmentDefinition',
-            )
-        self.assertRaises(TypeError, VersionBad, 1)
+        invalids = [
+            ('not',),  # iterable, but not a SegmentDefinition
+            666,  # not even an iterable
+        ]
+        for invalid in invalids:
+            self.assertRaises(TypeError, type, 'VersionBad', (Version,),
+                              dict(SEGMENT_DEFINITIONS=invalid))
 
     def test_init_no_values(self):
         self.assertRaises(ValueError, Version)
@@ -151,7 +170,24 @@ class VersionTestCase(unittest.TestCase):
             )
         # Matching string succeeds.
         VersionString("1.2.3")
+        # Non-matching string raises exception.
         self.assertRaises(ValueError, VersionString, "1.2x.3")
+
+    def test_init_value_string_no_separator(self):
+        class Version1(Version):
+            SEGMENT_DEFINITIONS = (
+                SegmentDefinition(
+                    optional=True,
+                    default=0,
+                ),
+                SegmentDefinition(
+                    separator='',
+                    fields=SegmentField(type=str,
+                                        re_pattern='[a-z]')),
+            )
+        self.assertEqual("2x", str(Version1("2x")))
+        self.assertEqual("0x", str(Version1("0x")))
+        self.assertEqual("0x", str(Version1("x")))
 
     def test_init_values_exceed_definitions(self):
         class Version1(Version):
@@ -169,12 +205,35 @@ class VersionTestCase(unittest.TestCase):
         self.assertEqual(1, version[0])
         self.assertEqual(0, version[1])
 
+    def test_init_definitions_all_optional(self):
+        self.assertRaises(ValueError, type, 'Version1', (Version,),
+                          dict(SEGMENT_DEFINITIONS=
+                               (SegmentDefinition(optional=True, default=0),
+                                SegmentDefinition(optional=True, default=0))))
+
+    def test_init_definitions_first_optional(self):
+        class Version1(Version):
+            SEGMENT_DEFINITIONS = (SegmentDefinition(optional=True,
+                                                     default=0),
+                                   SegmentDefinition(default=0))
+        version = Version1("7")
+        self.assertEqual("0.7", str(version))
+        self.assertEqual(0, version[0])
+        self.assertEqual(7, version[1])
+
     def test_init_segment_name_duplicate(self):
-        class VersionBad(Version):
-            SEGMENT_DEFINITIONS = (SegmentDefinition(name='oops'),
-                                   SegmentDefinition(name='unique'),
-                                   SegmentDefinition(name='oops'))
-        self.assertRaises(ValueError, VersionBad, 1, 2, 3)
+        self.assertRaises(ValueError, type, 'VersionBad', (Version,),
+                          dict(SEGMENT_DEFINITIONS=
+                               (SegmentDefinition(name='oops'),
+                                SegmentDefinition(name='unique'),
+                                SegmentDefinition(name='oops'))))
+
+    def test_invalid_attribute(self):
+        version = Version(1, 2, 3)
+        # Version objects are immutable and have no __dict__.
+        self.assertRaises(AttributeError, getattr, version, '__dict__')
+        self.assertRaises(AttributeError, setattr, version,
+                          'nonexistent_attribute', 0)
 
     def test_repr(self):
         expected = 'verschemes.Version(3, 5, 8, 13)'
@@ -256,35 +315,15 @@ class VersionTestCase(unittest.TestCase):
         self.assertEqual('6.7.8.4.9', str(Version1('6.7.8.9')))
         self.assertEqual('6.7.8.9.0', str(Version1('6.7.8.9.0')))
 
-    def test_render_exclude_defaults_callback_override(self):
+    def test_separator_re_pattern(self):
         class Version1(Version):
-            SEGMENT_DEFINITIONS = (SegmentDefinition(name='first'),
-                                   SegmentDefinition(name='second',
-                                                     default=2),
-                                   SegmentDefinition(name='third',
-                                                     optional=True,
-                                                     default=3),
-                                   SegmentDefinition(name='fourth',
-                                                     optional=True,
-                                                     default=4),
-                                   SegmentDefinition(name='fifth',
-                                                     optional=True,
-                                                     default=5))
-        class Version2(Version1):
-            def _render_exclude_defaults_callback(self, index, scope=None):
-                if scope is None:
-                    scope = range(4)
-                return super()._render_exclude_defaults_callback(index, scope)
-        version1 = Version1(1, fifth=50)
-        version2 = Version2(1, fifth=50)
-        version2_with_third = Version2(1, third=30, fifth=50)
-        version2_with_fourth = Version2(1, fourth=40, fifth=50)
-        # when the callback's scope includes 'fifth'
-        self.assertEqual('1.2.3.4.50', version1.render())
-        # when it does not include 'fifth'
-        self.assertEqual('1.2.50', version2.render())
-        self.assertEqual('1.2.30.50', version2_with_third.render())
-        self.assertEqual('1.2.3.40.50', version2_with_fourth.render())
+            SEGMENT_DEFINITIONS = (
+                SegmentDefinition(),
+                SegmentDefinition(separator_re_pattern='[.,-]'),
+            )
+        self.assertEqual('1.2', Version1('1.2'))
+        self.assertEqual('1.2', Version1('1,2'))
+        self.assertEqual('1.2', Version1('1-2'))
 
 
 class VersionRenderTestCase(unittest.TestCase):
@@ -326,6 +365,32 @@ class VersionRenderTestCase(unittest.TestCase):
         self.assertEqual('1.2.3',
                          self.version.render(include_callbacks=[callback]))
 
+    def test_render_exclude_defaults_callback_override(self):
+        class Version1(Version):
+            SEGMENT_DEFINITIONS = (
+                SegmentDefinition(name='first'),
+                SegmentDefinition(name='second', default=2),
+                SegmentDefinition(name='third', optional=True, default=3),
+                SegmentDefinition(name='fourth', optional=True, default=4),
+                SegmentDefinition(name='fifth', optional=True, default=5),
+            )
+        class Version2(Version1):
+            def _render_exclude_defaults_callback(self, index, scope=None):
+                if scope is None:
+                    scope = range(4)
+                return super()._render_exclude_defaults_callback(index, scope)
+        version1 = Version1(1, fifth=50)
+        version2 = Version2(1, fifth=50)
+        version2_with_third = Version2(1, third=30, fifth=50)
+        version2_with_fourth = Version2(1, fourth=40, fifth=50)
+        # when the callback's scope includes 'fifth'
+        self.assertEqual('1.2.3.4.50', version1.render())
+        # when it does not include 'fifth'
+        self.assertEqual('1.2.50', version2.render())
+        self.assertEqual('1.2.30.50', version2_with_third.render())
+        self.assertEqual('1.2.3.40.50', version2_with_fourth.render())
+
+
 class VersionSegmentAccessTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -338,8 +403,13 @@ class VersionSegmentAccessTestCase(unittest.TestCase):
                                    SegmentDefinition(name='second',
                                                      default=6),
                                    SegmentDefinition(name='third'))
+        class VersionNamedConflict(Version):
+            SEGMENT_DEFINITIONS = (SegmentDefinition(name='render'),
+                                   SegmentDefinition(name='second'),
+                                   SegmentDefinition(name='replace'))
         self.version = VersionNamed(5, 12, 7)
         self.version_defaulted = VersionNamedWithDefault(3, third=4)
+        self.version_conflict = VersionNamedConflict(1, 2, 3)
 
     def test_index(self):
         self.assertEqual(5, self.version[0])
@@ -348,12 +418,17 @@ class VersionSegmentAccessTestCase(unittest.TestCase):
         self.assertEqual(3, self.version_defaulted[0])
         self.assertEqual(6, self.version_defaulted[1])
         self.assertEqual(4, self.version_defaulted[2])
+        self.assertEqual(1, self.version_conflict[0])
+        self.assertEqual(2, self.version_conflict[1])
+        self.assertEqual(3, self.version_conflict[2])
 
     def test_slice(self):
         self.assertEqual((5, 12), self.version[:2])
         self.assertEqual((12, 7), self.version[1:])
         self.assertEqual((3, 6), self.version_defaulted[:2])
         self.assertEqual((6, 4), self.version_defaulted[1:])
+        self.assertEqual((1, 2), self.version_conflict[:2])
+        self.assertEqual((2, 3), self.version_conflict[1:])
 
     def test_keyword(self):
         self.assertEqual(5, self.version['first'])
@@ -362,6 +437,9 @@ class VersionSegmentAccessTestCase(unittest.TestCase):
         self.assertEqual(3, self.version_defaulted['first'])
         self.assertEqual(6, self.version_defaulted['second'])
         self.assertEqual(4, self.version_defaulted['third'])
+        self.assertEqual(1, self.version_conflict['render'])
+        self.assertEqual(2, self.version_conflict['second'])
+        self.assertEqual(3, self.version_conflict['replace'])
 
     def test_property(self):
         self.assertEqual(5, self.version.first)
@@ -370,6 +448,12 @@ class VersionSegmentAccessTestCase(unittest.TestCase):
         self.assertEqual(3, self.version_defaulted.first)
         self.assertEqual(6, self.version_defaulted.second)
         self.assertEqual(4, self.version_defaulted.third)
+        # The segment's name matches a method attribute name.
+        self.assertIsInstance(self.version_conflict.render, types.MethodType)
+        # The segment's name does not match an existing attribute name.
+        self.assertEqual(2, self.version_conflict.second)
+        # The segment's name matches a method attribute name.
+        self.assertIsInstance(self.version_conflict.replace, types.MethodType)
 
     def test_raw_index(self):
         self.assertEqual(3, self.version_defaulted.get_raw_item(0))

@@ -7,19 +7,22 @@ The PostgreSQL verschemes module implements standard
 
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# Support Python 2 & 3.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from verschemes.future import *
 
-from future.builtins import range
-
-from verschemes import SegmentDefinition as _SegmentDefinition
-from verschemes import Version as _Version
+from verschemes import SegmentDefinition, Version
 
 
+__all__ = []
+
+__all__.extend(['SEGMENTS', 'MAJOR1', 'MAJOR2', 'MINOR'])
 SEGMENTS = (MAJOR1, MAJOR2, MINOR) = tuple(range(3))
 
 
-class PgMajorVersion(_Version):
+__all__.append('PgMajorVersion')
+class PgMajorVersion(Version):
 
     """A major PostgreSQL version.
 
@@ -36,10 +39,10 @@ class PgMajorVersion(_Version):
     """
 
     SEGMENT_DEFINITIONS = (
-        _SegmentDefinition(
+        SegmentDefinition(
             name='major1',
         ),
-        _SegmentDefinition(
+        SegmentDefinition(
             name='major2',
         ),
     )
@@ -54,6 +57,7 @@ class PgMajorVersion(_Version):
         return PgMajorVersion(self[MAJOR1], self[MAJOR2])
 
 
+__all__.append('PgVersion')
 class PgVersion(PgMajorVersion):
 
     """A complete, specific PostgreSQL version.
@@ -64,7 +68,7 @@ class PgVersion(PgMajorVersion):
     """
 
     SEGMENT_DEFINITIONS = PgMajorVersion.SEGMENT_DEFINITIONS + (
-        _SegmentDefinition(
+        SegmentDefinition(
             name='minor',
             optional=True,
             default=0,

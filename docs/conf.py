@@ -13,13 +13,12 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# Support Python 2 & 3.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import sys
 import os
-
-from future.builtins import str
 
 
 _PROJECT_PATH = os.path.dirname(os.path.dirname(__file__))
@@ -29,6 +28,9 @@ _PROJECT_PATH = os.path.dirname(os.path.dirname(__file__))
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.join(_PROJECT_PATH, 'src'))
+
+# Support Python 2 & 3.
+from verschemes.future import *
 
 # -- General configuration ------------------------------------------------
 

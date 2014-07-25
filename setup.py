@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 """setup.py for the verschemes project"""
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# Support Python 2 & 3.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import os
 

@@ -1,11 +1,11 @@
 """X.org verschemes tests"""
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# Support Python 2 & 3.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from verschemes.future import *
 
 import unittest
-
-from future.builtins import str
 
 from verschemes.xorg import XorgVersion
 
@@ -207,7 +207,3 @@ class XorgVersionTestCase(unittest.TestCase):
 
     def test_invalid_development(self):
         self.assertRaises(ValueError, XorgVersion, 7, 1, 3, 2)
-
-
-if __name__ == '__main__':
-    unittest.main()

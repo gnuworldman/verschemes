@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """Python verschemes tests"""
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# Support Python 2 & 3.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from verschemes.future import *
 
 import unittest
-
-from future.builtins import str
 
 from verschemes.python import (PythonMajorVersion, PythonMicroVersion,
                                PythonMinorVersion, PythonVersion)
@@ -186,7 +186,3 @@ class PythonVersionTestCase(unittest.TestCase):
 
     def test_invalid_alpha_string(self):
         self.assertRaises(ValueError, PythonVersion, 2, 7, 9, 'a')
-
-
-if __name__ == '__main__':
-    unittest.main()

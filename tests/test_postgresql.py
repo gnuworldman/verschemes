@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """PostgreSQL verschemes tests"""
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# Support Python 2 & 3.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from verschemes.future import *
 
 import unittest
-
-from future.builtins import str
 
 from verschemes.postgresql import PgMajorVersion, PgVersion
 
@@ -85,7 +85,3 @@ class PgVersionTestCase(unittest.TestCase):
     def test_invalid_minor_major_comparison(self):
         version = PgVersion(8, 3, 4)
         self.assertNotEqual(PgMajorVersion(8, 2), version.major_version)
-
-
-if __name__ == '__main__':
-    unittest.main()

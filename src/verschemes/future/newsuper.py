@@ -1,13 +1,19 @@
+# -*- coding: utf-8 -*-
 """Custom future.builtins.newsuper stuff."""
 
-from __future__ import absolute_import
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
 import sys
 from types import FunctionType
 
 
+__all__ = ['newsuper']
+
 _builtin_super = super
 
 _SENTINEL = object()
+
 
 def newsuper(typ=_SENTINEL, type_or_obj=_SENTINEL, framedepth=1):
     """Fix for :meth:`~future.builtins.newsuper.newsuper`.
@@ -69,6 +75,3 @@ def newsuper(typ=_SENTINEL, type_or_obj=_SENTINEL, framedepth=1):
     if type_or_obj is not _SENTINEL:
         return _builtin_super(typ, type_or_obj)
     return _builtin_super(typ)  # pragma: no cover
-
-
-__all__ = ['newsuper']

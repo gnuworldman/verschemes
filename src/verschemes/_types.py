@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 """verschemes._types module"""
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
-from future.utils import PY2 as _PY2
-
-if _PY2:  # pragma: no coverage  # pragma: no branch
-    from verschemes.future.newsuper import newsuper as super
+# Support Python 2 & 3.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from verschemes.future import *
 
 
-class int_default_zero(int):
+__all__ = []
+
+
+__all__.append('int_empty_zero')
+class int_empty_zero(int):
 
     """Subclass of `int` that defaults to zero.
 
