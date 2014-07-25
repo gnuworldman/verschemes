@@ -57,21 +57,22 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="c"># Support Python 2 &amp; 3.</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="p">(</span><span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span>
+                        <span class="n">unicode_literals</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">verschemes.future</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">str</span>
-<span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">range</span>
-
-<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentDefinition</span> <span class="k">as</span> <span class="n">_SegmentDefinition</span>
-<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentField</span> <span class="k">as</span> <span class="n">_SegmentField</span>
-<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">Version</span> <span class="k">as</span> <span class="n">_Version</span>
+<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentDefinition</span><span class="p">,</span> <span class="n">SegmentField</span><span class="p">,</span> <span class="n">Version</span>
 
 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">__all__</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">&#39;SEGMENTS&#39;</span><span class="p">,</span> <span class="s">&#39;MAJOR&#39;</span><span class="p">,</span> <span class="s">&#39;MINOR&#39;</span><span class="p">,</span> <span class="s">&#39;MICRO&#39;</span><span class="p">,</span> <span class="s">&#39;SUFFIX&#39;</span><span class="p">])</span>
 <span class="n">SEGMENTS</span> <span class="o">=</span> <span class="p">(</span><span class="n">MAJOR</span><span class="p">,</span> <span class="n">MINOR</span><span class="p">,</span> <span class="n">MICRO</span><span class="p">,</span> <span class="n">SUFFIX</span><span class="p">)</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="PythonMajorVersion"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonMajorVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonMajorVersion</span><span class="p">(</span><span class="n">_Version</span><span class="p">):</span>
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;PythonMajorVersion&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="PythonMajorVersion"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonMajorVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonMajorVersion</span><span class="p">(</span><span class="n">Version</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;A major Python version.</span>
 
@@ -87,7 +88,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;major&#39;</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">)</span>
@@ -102,6 +103,7 @@
         <span class="k">return</span> <span class="n">PythonMajorVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">MAJOR</span><span class="p">])</span>
 
 </div></div>
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;PythonMinorVersion&#39;</span><span class="p">)</span>
 <div class="viewcode-block" id="PythonMinorVersion"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonMinorVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonMinorVersion</span><span class="p">(</span><span class="n">PythonMajorVersion</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;A minor Python version.</span>
@@ -119,7 +121,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="n">PythonMajorVersion</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span> <span class="o">+</span> <span class="p">(</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;minor&#39;</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">)</span>
@@ -134,6 +136,7 @@
         <span class="k">return</span> <span class="n">PythonMinorVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">MAJOR</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="n">MINOR</span><span class="p">])</span>
 
 </div></div>
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;PythonMicroVersion&#39;</span><span class="p">)</span>
 <div class="viewcode-block" id="PythonMicroVersion"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonMicroVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonMicroVersion</span><span class="p">(</span><span class="n">PythonMinorVersion</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;A micro Python version.</span>
@@ -151,7 +154,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="n">PythonMinorVersion</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span> <span class="o">+</span> <span class="p">(</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;micro&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
         <span class="p">),</span>
@@ -167,6 +170,7 @@
         <span class="k">return</span> <span class="n">PythonMicroVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">MAJOR</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="n">MINOR</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="n">MICRO</span><span class="p">])</span>
 
 </div></div>
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;PythonVersion&#39;</span><span class="p">)</span>
 <div class="viewcode-block" id="PythonVersion"><a class="viewcode-back" href="../../api.html#verschemes.python.PythonVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonVersion</span><span class="p">(</span><span class="n">PythonMicroVersion</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;A complete, specific Python version.</span>
@@ -178,17 +182,17 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="n">PythonMicroVersion</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span> <span class="o">+</span> <span class="p">(</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;suffix&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">separator</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
             <span class="n">fields</span><span class="o">=</span><span class="p">(</span>
-                <span class="n">_SegmentField</span><span class="p">(</span>
+                <span class="n">SegmentField</span><span class="p">(</span>
                     <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
                     <span class="n">name</span><span class="o">=</span><span class="s">&#39;releaselevel&#39;</span><span class="p">,</span>
                     <span class="n">re_pattern</span><span class="o">=</span><span class="s">&#39;[+abc]&#39;</span><span class="p">,</span>
                 <span class="p">),</span>
-                <span class="n">_SegmentField</span><span class="p">(</span>
+                <span class="n">SegmentField</span><span class="p">(</span>
                     <span class="n">name</span><span class="o">=</span><span class="s">&#39;serial&#39;</span><span class="p">,</span>
                     <span class="n">re_pattern</span><span class="o">=</span><span class="s">&#39;(?&lt;=[+])|(?&lt;![+])(?:0|[1-9][0-9]*)&#39;</span><span class="p">,</span>
                     <span class="n">render</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s">&quot;&quot;</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>

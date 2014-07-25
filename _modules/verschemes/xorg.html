@@ -60,10 +60,17 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentDefinition</span> <span class="k">as</span> <span class="n">_SegmentDefinition</span>
-<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">Version</span> <span class="k">as</span> <span class="n">_Version</span>
+<span class="c"># Support Python 2 &amp; 3.</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="p">(</span><span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span>
+                        <span class="n">unicode_literals</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">verschemes.future</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentDefinition</span><span class="p">,</span> <span class="n">Version</span>
 
 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">__all__</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">&#39;SEGMENTS&#39;</span><span class="p">,</span> <span class="s">&#39;MAJOR&#39;</span><span class="p">,</span> <span class="s">&#39;MINOR&#39;</span><span class="p">,</span> <span class="s">&#39;PATCH&#39;</span><span class="p">,</span> <span class="s">&#39;SNAPSHOT&#39;</span><span class="p">])</span>
 <span class="n">SEGMENTS</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">MAJOR</span><span class="p">,</span>
     <span class="n">MINOR</span><span class="p">,</span>
@@ -71,25 +78,29 @@
     <span class="n">SNAPSHOT</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
 
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;PRE_FULL_RELEASE&#39;</span><span class="p">)</span>
 <span class="n">PRE_FULL_RELEASE</span> <span class="o">=</span> <span class="mi">99</span>
+
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;BRANCH_START_SNAPSHOT&#39;</span><span class="p">)</span>
 <span class="n">BRANCH_START_SNAPSHOT</span> <span class="o">=</span> <span class="mi">900</span>
 
 
-<div class="viewcode-block" id="XorgVersion"><a class="viewcode-back" href="../../api.html#verschemes.xorg.XorgVersion">[docs]</a><span class="k">class</span> <span class="nc">XorgVersion</span><span class="p">(</span><span class="n">_Version</span><span class="p">):</span>
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;XorgVersion&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="XorgVersion"><a class="viewcode-back" href="../../api.html#verschemes.xorg.XorgVersion">[docs]</a><span class="k">class</span> <span class="nc">XorgVersion</span><span class="p">(</span><span class="n">Version</span><span class="p">):</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;major&#39;</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;minor&#39;</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;patch&#39;</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;snapshot&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>

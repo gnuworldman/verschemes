@@ -60,109 +60,186 @@
 <span class="sd">hyphen and a numeric version (as implemented by the defaults in the base</span>
 <span class="sd">`verschemes.Version` class) appended.</span>
 
+<span class="sd">This implementation is limited to six release-number segments, which should</span>
+<span class="sd">handle any reasonable scheme.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="c"># Support Python 2 &amp; 3.</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="p">(</span><span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span>
+                        <span class="n">unicode_literals</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">verschemes.future</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">range</span>
-<span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">super</span>
-
-<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentDefinition</span> <span class="k">as</span> <span class="n">_SegmentDefinition</span>
-<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentField</span> <span class="k">as</span> <span class="n">_SegmentField</span>
-<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">Version</span> <span class="k">as</span> <span class="n">_Version</span>
+<span class="kn">from</span> <span class="nn">verschemes</span> <span class="kn">import</span> <span class="n">SegmentDefinition</span><span class="p">,</span> <span class="n">SegmentField</span><span class="p">,</span> <span class="n">Version</span>
+<span class="kn">from</span> <span class="nn">verschemes._types</span> <span class="kn">import</span> <span class="n">int_empty_zero</span>
 
 
-<span class="n">RELEASE_SEGMENTS</span> <span class="o">=</span> <span class="p">(</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">__all__</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">&#39;SEGMENTS&#39;</span><span class="p">,</span> <span class="s">&#39;EPOCH&#39;</span><span class="p">,</span> <span class="s">&#39;RELEASE1&#39;</span><span class="p">,</span> <span class="s">&#39;RELEASE2&#39;</span><span class="p">,</span> <span class="s">&#39;RELEASE3&#39;</span><span class="p">,</span>
+                <span class="s">&#39;RELEASE4&#39;</span><span class="p">,</span> <span class="s">&#39;RELEASE5&#39;</span><span class="p">,</span> <span class="s">&#39;RELEASE6&#39;</span><span class="p">,</span> <span class="s">&#39;PRE_RELEASE&#39;</span><span class="p">,</span>
+                <span class="s">&#39;POST_RELEASE&#39;</span><span class="p">,</span> <span class="s">&#39;DEVELOPMENT&#39;</span><span class="p">])</span>
+<span class="n">SEGMENTS</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">EPOCH</span><span class="p">,</span>
     <span class="n">RELEASE1</span><span class="p">,</span>
     <span class="n">RELEASE2</span><span class="p">,</span>
     <span class="n">RELEASE3</span><span class="p">,</span>
     <span class="n">RELEASE4</span><span class="p">,</span>
     <span class="n">RELEASE5</span><span class="p">,</span>
-    <span class="n">RELEASE6</span>
-<span class="p">)</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">))</span>
-
-<span class="n">NONRELEASE_SEGMENTS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">RELEASE6</span><span class="p">,</span>
     <span class="n">PRE_RELEASE</span><span class="p">,</span>
     <span class="n">POST_RELEASE</span><span class="p">,</span>
-    <span class="n">DEVELOPMENT</span>
-<span class="p">)</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">DEVELOPMENT</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 
-<span class="n">SEGMENTS</span> <span class="o">=</span> <span class="n">RELEASE_SEGMENTS</span> <span class="o">+</span> <span class="n">NONRELEASE_SEGMENTS</span>
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;RELEASE_SEGMENTS&#39;</span><span class="p">)</span>
+<span class="n">RELEASE_SEGMENTS</span> <span class="o">=</span> <span class="n">SEGMENTS</span><span class="p">[:</span><span class="n">PRE_RELEASE</span><span class="p">]</span>
+
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;NONRELEASE_SEGMENTS&#39;</span><span class="p">)</span>
+<span class="n">NONRELEASE_SEGMENTS</span> <span class="o">=</span> <span class="n">SEGMENTS</span><span class="p">[</span><span class="n">PRE_RELEASE</span><span class="p">:]</span>
 
 
-<div class="viewcode-block" id="Pep440Version"><a class="viewcode-back" href="../../api.html#verschemes.pep440.Pep440Version">[docs]</a><span class="k">class</span> <span class="nc">Pep440Version</span><span class="p">(</span><span class="n">_Version</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_pre_release_level_render</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s">&#39;rc&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="s">&#39;c&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;Pep440Version&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="Pep440Version"><a class="viewcode-back" href="../../api.html#verschemes.pep440.Pep440Version">[docs]</a><span class="k">class</span> <span class="nc">Pep440Version</span><span class="p">(</span><span class="n">Version</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;A PEP 440 public version.</span>
+
+<span class="sd">    The version scheme has an optional `epoch` segment followed by up to six</span>
+<span class="sd">    release-number segments (named &#39;releaseX&#39;, where X is 1-6) followed by the</span>
+<span class="sd">    optional `pre_release`, `post_release`, and `development` segments.</span>
+
+<span class="sd">    `~verschemes.Version.SEGMENT_DEFINITIONS` contains the following named</span>
+<span class="sd">    segments in order:</span>
+
+<span class="sd">    * epoch: optional=True, default=0</span>
+
+<span class="sd">    * release1: default=0, separator=&#39;!&#39;</span>
+
+<span class="sd">    * release2: optional=True, default=0</span>
+
+<span class="sd">    * release3: optional=True, default=0</span>
+
+<span class="sd">    * release4: optional=True, default=0</span>
+
+<span class="sd">    * release5: optional=True, default=0</span>
+
+<span class="sd">    * release6: optional=True, default=0</span>
+
+<span class="sd">    * pre_release: optional=True, separator=&#39;&#39;, separator_re_pattern=&#39;[.-]?&#39;</span>
+<span class="sd">        * field &#39;level&#39;: type=str (case-insensitive input)</span>
+<span class="sd">            * normal form &#39;a&#39; accepts &#39;a&#39; or &#39;alpha&#39;</span>
+<span class="sd">            * normal form &#39;b&#39; accepts &#39;b&#39; or &#39;beta&#39;</span>
+<span class="sd">            * normal form &#39;c&#39; accepts &#39;c&#39; or &#39;rc&#39;</span>
+<span class="sd">        * field &#39;serial&#39;: type=int_empty_zero, re_pattern=&#39;[0-9]*&#39;</span>
+
+<span class="sd">    * post_release: optional=True, separator=&#39;.post&#39;, separator_re_pattern=&#39;[.-]?post&#39;</span>
+<span class="sd">        * field: type=int_empty_zero, re_pattern=&#39;[0-9]*&#39;</span>
+
+<span class="sd">    * development: optional=True, separator=&#39;.dev&#39;, separator_re_pattern=&#39;[.-]?dev&#39;</span>
+<span class="sd">        * field: type=int_empty_zero, re_pattern=&#39;[0-9]*&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">SEGMENT_DEFINITIONS</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;epoch&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;release1&#39;</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-            <span class="n">separator</span><span class="o">=</span><span class="s">&#39;:&#39;</span><span class="p">,</span>
+            <span class="n">separator</span><span class="o">=</span><span class="s">&#39;!&#39;</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;release2&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;release3&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;release4&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;release5&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;release6&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;pre_release&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">separator</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">separator_re_pattern</span><span class="o">=</span><span class="s">&#39;[.-]?&#39;</span><span class="p">,</span>
             <span class="n">fields</span><span class="o">=</span><span class="p">(</span>
-                <span class="n">_SegmentField</span><span class="p">(</span>
+                <span class="n">SegmentField</span><span class="p">(</span>
                     <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
                     <span class="n">name</span><span class="o">=</span><span class="s">&#39;level&#39;</span><span class="p">,</span>
-                    <span class="n">re_pattern</span><span class="o">=</span><span class="s">&#39;[abc]|rc&#39;</span><span class="p">,</span>
+                    <span class="n">re_pattern</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;[aAbBcC]|&#39;</span>
+                                <span class="s">&#39;[aA][lL][pP][hH][aA]|&#39;</span>
+                                <span class="s">&#39;[bB][eE][tT][aA]|&#39;</span>
+                                <span class="s">&#39;[rR][cC]&#39;</span><span class="p">),</span>
+                    <span class="n">render</span><span class="o">=</span><span class="n">_pre_release_level_render</span>
                 <span class="p">),</span>
-                <span class="n">_SegmentField</span><span class="p">(</span>
+                <span class="n">SegmentField</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="n">int_empty_zero</span><span class="p">,</span>
                     <span class="n">name</span><span class="o">=</span><span class="s">&#39;serial&#39;</span><span class="p">,</span>
+                    <span class="n">re_pattern</span><span class="o">=</span><span class="s">&#39;[0-9]*&#39;</span><span class="p">,</span>
                 <span class="p">),</span>
             <span class="p">),</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;post_release&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">separator</span><span class="o">=</span><span class="s">&#39;.post&#39;</span><span class="p">,</span>
+            <span class="n">separator_re_pattern</span><span class="o">=</span><span class="s">&#39;[.-]?post&#39;</span><span class="p">,</span>
+            <span class="n">fields</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">SegmentField</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="n">int_empty_zero</span><span class="p">,</span>
+                    <span class="n">re_pattern</span><span class="o">=</span><span class="s">&#39;[0-9]*&#39;</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
         <span class="p">),</span>
-        <span class="n">_SegmentDefinition</span><span class="p">(</span>
+        <span class="n">SegmentDefinition</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s">&#39;development&#39;</span><span class="p">,</span>
             <span class="n">optional</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
             <span class="n">separator</span><span class="o">=</span><span class="s">&#39;.dev&#39;</span><span class="p">,</span>
+            <span class="n">separator_re_pattern</span><span class="o">=</span><span class="s">&#39;[.-]?dev&#39;</span><span class="p">,</span>
+            <span class="n">fields</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">SegmentField</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="n">int_empty_zero</span><span class="p">,</span>
+                    <span class="n">re_pattern</span><span class="o">=</span><span class="s">&#39;[0-9]*&#39;</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="Pep440Version.is_release"><a class="viewcode-back" href="../../api.html#verschemes.pep440.Pep440Version.is_release">[docs]</a>    <span class="k">def</span> <span class="nf">is_release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Whether all of the non-release segments have no value.</span>
+        <span class="sd">&quot;&quot;&quot;Whether this version represents a final release.</span>
 
-<span class="sd">        The non-release segments are named &#39;pre_release&#39;, &#39;post_release&#39;, and</span>
-<span class="sd">        &#39;development&#39;.</span>
+<span class="sd">        Return `True` if all of the &#39;pre_release&#39;, &#39;post_release&#39;, and</span>
+<span class="sd">        &#39;development&#39; segments have no value.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">NONRELEASE_SEGMENTS</span><span class="p">)</span>

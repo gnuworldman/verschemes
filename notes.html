@@ -60,10 +60,21 @@ an object named &#8216;version&#8217;, <tt class="docutils literal"><span class=
 segment in place, but <tt class="docutils literal"><span class="pre">version.replace(_2=8)</span></tt> can be used to create a new
 object of the same type with the new segment value and all other segment values
 same as the original object.</p>
+<p>The default for the <tt class="xref py py-obj docutils literal"><span class="pre">re_pattern</span></tt> attribute of <a class="reference internal" href="api.html#verschemes.SegmentField" title="verschemes.SegmentField"><tt class="xref py py-obj docutils literal"><span class="pre">SegmentField</span></tt></a> has
+been changed to allow field input with leading zeros.  By default when the
+value is rendered, it is normalized to not contain unnecessary leading zeros.</p>
 <p>A segment can now be given a name in the <a class="reference internal" href="api.html#verschemes.SegmentDefinition" title="verschemes.SegmentDefinition"><tt class="xref py py-obj docutils literal"><span class="pre">SegmentDefinition</span></tt></a>
 constructor, which allows the segment value in a <a class="reference internal" href="api.html#verschemes.Version" title="verschemes.Version"><tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt></a> object
 to be accessed via a property of that name and may also be identified by that
 name as a keyword in the constructor and <a class="reference internal" href="api.html#verschemes.Version.replace" title="verschemes.Version.replace"><tt class="xref py py-meth docutils literal"><span class="pre">replace()</span></tt></a>.</p>
+<p><a class="reference internal" href="api.html#verschemes.SegmentDefinition" title="verschemes.SegmentDefinition"><tt class="xref py py-obj docutils literal"><span class="pre">SegmentDefinition</span></tt></a> now also accepts an optional
+<tt class="xref py py-obj docutils literal"><span class="pre">separator_re_pattern</span></tt> attribute that can be used to accept (during string
+initialization) more than the literal <tt class="xref py py-obj docutils literal"><span class="pre">separator</span></tt>, which is the normal form
+(output when rendered) for the separator prior to the segment.</p>
+<p>The <tt class="xref py py-obj docutils literal"><span class="pre">separator</span></tt> prior to the <tt class="xref py py-obj docutils literal"><span class="pre">release1</span></tt> segment of
+<a class="reference internal" href="api.html#verschemes.pep440.Pep440Version" title="verschemes.pep440.Pep440Version"><tt class="xref py py-obj docutils literal"><span class="pre">Pep440Version</span></tt></a> has been fixed (was a colon) so that if an
+<tt class="xref py py-obj docutils literal"><span class="pre">epoch</span></tt> is specified, it will be followed by the proper exclamation mark when
+the version is rendered.</p>
 <p>An implementation of the <a class="reference external" href="http://www.x.org/">X.org</a> <a class="reference external" href="http://www.x.org/wiki/Development/Documentation/VersionNumberScheme/">version number scheme</a> is now
 included in the <a class="reference internal" href="api.html#module-verschemes.xorg" title="verschemes.xorg"><tt class="xref py py-obj docutils literal"><span class="pre">xorg</span></tt></a> module.</p>
 </div>
