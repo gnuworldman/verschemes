@@ -28,7 +28,7 @@ setup(
     maintainer_email="gnuworldman@gmail.com",
     url='https://github.com/gnuworldman/verschemes',
     description="Version identifier management",
-    long_description=read_file('README'),
+    long_description=read_file('README.rst'),
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',

@@ -10,9 +10,10 @@ Contents:
 .. toctree::
    :maxdepth: 4
 
-   purpose
+   overview
    installation
    api
+   examples
    notes
 
 
