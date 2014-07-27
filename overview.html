@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Purpose of the verschemes library &mdash; verschemes 1.1.0 documentation</title>
+    <title>Overview &mdash; verschemes 1.1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -52,40 +52,45 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="purpose-of-the-verschemes-library">
-<h1>Purpose of the verschemes library<a class="headerlink" href="#purpose-of-the-verschemes-library" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="concept">
+<h2>Concept<a class="headerlink" href="#concept" title="Permalink to this headline">¶</a></h2>
 <p>Most versioned components have their own method of identifying their versions.
 This method is often termed &#8220;versioning&#8221; or called a &#8220;version scheme&#8221;.  The
 method is simply a set of rules that dictate what is a valid version identifier
-and is usually separated in a number of segments to signify hierarchy among the
-versions.  The hierarchy determines ordering along with the values of the
-segments within the hierarchy.</p>
-<p>For example, the following is an ordered list of common version identifiers:</p>
-<ul class="simple">
-<li>0.1</li>
-<li>0.2</li>
-<li>0.9</li>
-<li>0.10</li>
-<li>0.11</li>
-<li>1.0</li>
-<li>1.0.1</li>
-<li>1.1</li>
-<li>2.0</li>
-<li>10.0</li>
-</ul>
-<p>The most common version identifiers are simply an ordered set of integers
-separated by dots.  The default implementation in the <a class="reference internal" href="api.html#verschemes.Version" title="verschemes.Version"><tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt></a>
-class provides this common use case with any number of segments.  To create an
-instance of &#8220;version 1.4.2&#8221;, one can write <tt class="docutils literal"><span class="pre">Version(1,</span> <span class="pre">4,</span> <span class="pre">2)</span></tt> or
-<tt class="docutils literal"><span class="pre">Version('1.4.2')</span></tt> (after <tt class="docutils literal"><span class="pre">from</span> <span class="pre">verschemes</span> <span class="pre">import</span> <span class="pre">Version</span></tt>, of course).</p>
-<p>Some version schemes are more involved and require using subclasses of
-<tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> to represent them.  Each subclass of <tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> represents a specific
-version scheme, whereas each instance of a <tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> subclass represents a
-specific version that follows the class&#8217;s scheme.</p>
-<p>There are several version schemes implemented in the verschemes library, and
-more are sure to be added (submissions are welcome).  These implementations
-also work as examples for those wishing to subclass <tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> for their own
-(or another&#8217;s) version scheme.</p>
+and is usually separated (often by delimiters, such as a dot) in a number of
+segments to signify hierarchy among the versions.  The hierarchy determines
+ordering along with the values of the segments within the hierarchy.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>In the <a class="reference internal" href="api.html#module-verschemes" title="verschemes"><tt class="xref py py-obj docutils literal"><span class="pre">verschemes</span></tt></a> library, a version scheme is a set of rules pertaining to
+the identification of versions for a given scope or purpose.  Each version
+contains a number of segments often separated by delimiters.  Each segment is
+allowed to have multiple fields to identify portions of the segment, though
+many segments have just one field.</p>
+<p>Many version schemes are just integers separated by dots.  The base
+<a class="reference external" href="http://gnuworldman.github.io/verschemes/api.html#verschemes.Version">Version</a>
+class works fine for generic version numbers that fit
+this scheme, but the real power of this library is in defining version schemes
+(<tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> subclasses) with segments that specifically describe the scheme and
+automatically implement validation and normalized rendering of a version
+identifier or a sequence of version segment values.  The
+<a class="reference external" href="http://gnuworldman.github.io/verschemes/api.html#verschemes.Version.SEGMENT_DEFINITIONS">SEGMENT_DEFINITIONS</a>
+attribute of a <tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> subclass can be used to define the specific parameters
+of the version scheme that is represented by that class.</p>
+<p>The library also contains some implementations of specific version schemes
+including
+<a class="reference external" href="https://docs.python.org/3/faq/general.html#how-does-the-python-version-numbering-scheme-work">Python</a>,
+<a class="reference external" href="http://legacy.python.org/dev/peps/pep-0440/#local-version-identifiers">PEP 440</a>,
+<a class="reference external" href="http://www.postgresql.org/support/versioning/">PostgreSQL</a>, and
+<a class="reference external" href="http://www.x.org/wiki/Development/Documentation/VersionNumberScheme/">X.org</a>
+versioning.  More are sure to be added, and submissions of version shemes for
+popular, public projects/systems are welcome.  These implementations also serve
+as examples for those wishing to subclass <tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt> for their own (or
+another&#8217;s) version scheme.</p>
+</div>
 </div>
 
 
@@ -94,6 +99,15 @@ also work as examples for those wishing to subclass <tt class="xref py py-obj do
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Overview</a><ul>
+<li><a class="reference internal" href="#concept">Concept</a></li>
+<li><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
                         title="previous chapter">Python verschemes library documentation</a></p>
@@ -102,7 +116,7 @@ also work as examples for those wishing to subclass <tt class="xref py py-obj do
                         title="next chapter">Installation</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/purpose.txt"
+    <li><a href="_sources/overview.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
