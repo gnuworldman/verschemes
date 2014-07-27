@@ -5,6 +5,7 @@
 # Support Python 2 & 3.
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
+from future import utils
 
 import os
 
@@ -39,7 +40,7 @@ setup(
         'Topic :: Utilities',
         ],
     package_dir={'': 'src'},
-    packages=['verschemes',
-              'verschemes.future'],
+    packages=[utils.native_str('verschemes'),
+              utils.native_str('verschemes.future')],
     install_requires=['future'],
     )
