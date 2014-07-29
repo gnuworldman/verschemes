@@ -21,7 +21,7 @@ Instantiation from segment values
 
 >>> Version(3, 1, 4)
 verschemes.Version(3, 1, 4)
->>> PythonVersion(3, 1, 4, "b5")
+>>> PythonVersion(3, 1, 4, ["b", 5])
 verschemes.python.PythonVersion(3, 1, 4, ('b', 5))
 >>> Pep440Version(None, 3, 1, 4)
 verschemes.pep440.Pep440Version(None, 3, 1, 4, None, None, None, None, None, None)
@@ -57,7 +57,7 @@ Comparison
 True
 >>> Version("3.1.10") > Version("3.1.4")
 True
->>> PythonVersion(3, 1, 4, "b5").minor_version == PythonMinorVersion(3, 1)
+>>> PythonVersion(3, 1, 4, ["b", 5]).minor_version == PythonMinorVersion(3, 1)
 True
 
 Normalization
@@ -75,9 +75,9 @@ Normalization
 Properties
 ----------
 
->>> PythonVersion(3, 1, 4, "b5").is_release
+>>> PythonVersion(3, 1, 4, ["b", 5]).is_release
 True
->>> PythonVersion(3, 1, 4, "b5").is_nondevelopment
+>>> PythonVersion(3, 1, 4, ["b", 5]).is_nondevelopment
 False
 >>> Pep440Version("3.1.4").is_release
 True
