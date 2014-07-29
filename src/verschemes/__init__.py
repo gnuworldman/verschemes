@@ -297,8 +297,17 @@ class SegmentDefinition(collections.namedtuple('_SegmentDefinition',
     def validate_value(self, value):
         """Validate the given value and return the value as the inner type.
 
-        The given value may be a tuple of field values or a string that shall
-        be parsed by the fields' regular expressions.
+        The given value may be:
+
+        * a field value if there is only one field,
+        * a tuple of field values, or
+        * a string that shall be parsed by the fields' regular expressions.
+
+        The result will be:
+
+        * a field value if there is only one field or
+        * a `Segment` (`~collections.namedtuple` subclass) instance whose
+          attributes and values correspond to the fields' names and values.
 
         """
         if value is None:
