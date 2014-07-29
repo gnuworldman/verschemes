@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 """verschemes._types tests"""
 
-# Support Python 2 & 3.
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-from verschemes.future import *
-
 import unittest
 
 from verschemes._types import int_empty_zero
@@ -23,7 +18,7 @@ class IntDefaultZeroTestCase(unittest.TestCase):
         self.assertEqual(0, int_empty_zero(""))
 
     def test_none(self):
-        self.assertEqual(0, int_empty_zero(None))
+        self.assertRaises(TypeError, int_empty_zero, None)
 
     def test_int_keyword(self):
         self.assertEqual(1, int_empty_zero(x=1))
@@ -35,4 +30,4 @@ class IntDefaultZeroTestCase(unittest.TestCase):
         self.assertEqual(0, int_empty_zero(x=""))
 
     def test_none_keyword(self):
-        self.assertEqual(0, int_empty_zero(x=None))
+        self.assertRaises(TypeError, int_empty_zero, x=None)

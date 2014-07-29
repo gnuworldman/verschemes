@@ -22,9 +22,9 @@ class int_empty_zero(int):
 
     def __new__(cls, *args, **kwargs):
         if args:
-            if not args[0]:
+            if args[0] == '':
                 args = list(args)
                 args[0] = 0
-        elif 'x' in kwargs and not kwargs['x']:
+        elif 'x' in kwargs and kwargs['x'] == '':
             kwargs['x'] = 0
         return super().__new__(cls, *args, **kwargs)
