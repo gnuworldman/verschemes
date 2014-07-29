@@ -22,7 +22,7 @@ Instantiation from segment values
 >>> Version(3, 1, 4)
 verschemes.Version(3, 1, 4)
 >>> PythonVersion(3, 1, 4, ["b", 5])
-verschemes.python.PythonVersion(3, 1, 4, ('b', 5))
+verschemes.python.PythonVersion(3, 1, 4, Segment(releaselevel='b', serial=5))
 >>> Pep440Version(None, 3, 1, 4)
 verschemes.pep440.Pep440Version(None, 3, 1, 4, None, None, None, None, None, None)
 
@@ -75,9 +75,20 @@ Normalization
 Properties
 ----------
 
->>> PythonVersion(3, 1, 4, ["b", 5]).is_release
+>>> version = PythonVersion(3, 1, 4, ["b", 5])
+>>> version.major
+3
+>>> version.minor
+1
+>>> version.micro
+4
+>>> version.suffix.releaselevel
+'b'
+>>> version.suffix.serial
+5
+>>> version.is_release
 True
->>> PythonVersion(3, 1, 4, ["b", 5]).is_nondevelopment
+>>> version.is_nondevelopment
 False
 >>> Pep440Version("3.1.4").is_release
 True

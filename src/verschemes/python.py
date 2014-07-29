@@ -179,4 +179,5 @@ class PythonVersion(PythonMicroVersion):
         >>> assert(not PythonVersion('3.4.1+').is_release)
 
         """
-        return self[SUFFIX] != ('+', None)
+        suffix = self[SUFFIX]
+        return suffix is None or suffix.releaselevel != '+'

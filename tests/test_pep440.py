@@ -63,6 +63,8 @@ class Pep440VersionTestCase(unittest.TestCase):
         self.assertEqual(0, version.release5)
         self.assertEqual(0, version.release6)
         self.assertEqual(('a', 2), version.pre_release)
+        self.assertEqual('a', version.pre_release.level)
+        self.assertEqual(2, version.pre_release.serial)
         self.assertEqual(None, version.post_release)
         self.assertEqual(None, version.development)
 
@@ -77,6 +79,8 @@ class Pep440VersionTestCase(unittest.TestCase):
         self.assertEqual(0, version.release5)
         self.assertEqual(0, version.release6)
         self.assertEqual(('a', 2), version.pre_release)
+        self.assertEqual('a', version.pre_release.level)
+        self.assertEqual(2, version.pre_release.serial)
         self.assertEqual(None, version.post_release)
         self.assertEqual(None, version.development)
 
@@ -92,6 +96,8 @@ class Pep440VersionTestCase(unittest.TestCase):
         self.assertEqual(0, version.release5)
         self.assertEqual(0, version.release6)
         self.assertEqual(('a', 2), version.pre_release)
+        self.assertEqual('a', version.pre_release.level)
+        self.assertEqual(2, version.pre_release.serial)
         self.assertEqual(4, version.post_release)
         self.assertEqual(None, version.development)
 
@@ -121,6 +127,8 @@ class Pep440VersionTestCase(unittest.TestCase):
         self.assertEqual(0, version.release5)
         self.assertEqual(0, version.release6)
         self.assertEqual(('a', 2), version.pre_release)
+        self.assertEqual('a', version.pre_release.level)
+        self.assertEqual(2, version.pre_release.serial)
         self.assertEqual(None, version.post_release)
         self.assertEqual(36, version.development)
 
@@ -136,6 +144,8 @@ class Pep440VersionTestCase(unittest.TestCase):
         self.assertEqual(0, version.release5)
         self.assertEqual(0, version.release6)
         self.assertEqual(('a', 2), version.pre_release)
+        self.assertEqual('a', version.pre_release.level)
+        self.assertEqual(2, version.pre_release.serial)
         self.assertEqual(5, version.post_release)
         self.assertEqual(74, version.development)
 

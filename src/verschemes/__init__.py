@@ -269,7 +269,10 @@ class SegmentDefinition(collections.namedtuple('_SegmentDefinition',
             except (TypeError, ValueError):
                 value = None
             result.append(value)
-        return result[0] if len(fields) == 1 else tuple(result)
+        return (result[0] if len(fields) == 1 else
+                collections.namedtuple('Segment',
+                                       ' '.join(x.name for x in fields)
+                                       )(*result))
 
     @property
     def re_pattern(self):

@@ -55,6 +55,8 @@ class PythonVersionTestCase(unittest.TestCase):
         self.assertEqual(7, version.minor)
         self.assertEqual(8, version.micro)
         self.assertEqual(('+', None), version.suffix)
+        self.assertEqual('+', version.suffix.releaselevel)
+        self.assertEqual(None, version.suffix.serial)
         self.assertRaises(IndexError, version.__getitem__,
                           len(PythonVersion.SEGMENT_DEFINITIONS))
         self.assertEqual(version, PythonVersion('2.7.8+'))
@@ -67,6 +69,8 @@ class PythonVersionTestCase(unittest.TestCase):
         self.assertEqual(7, version.minor)
         self.assertEqual(9, version.micro)
         self.assertEqual(('a', 4), version.suffix)
+        self.assertEqual('a', version.suffix.releaselevel)
+        self.assertEqual(4, version.suffix.serial)
         self.assertRaises(IndexError, version.__getitem__,
                           len(PythonVersion.SEGMENT_DEFINITIONS))
 
@@ -78,6 +82,8 @@ class PythonVersionTestCase(unittest.TestCase):
         self.assertEqual(7, version.minor)
         self.assertEqual(12, version.micro)
         self.assertEqual(('b', 6), version.suffix)
+        self.assertEqual('b', version.suffix.releaselevel)
+        self.assertEqual(6, version.suffix.serial)
         self.assertRaises(IndexError, version.__getitem__,
                           len(PythonVersion.SEGMENT_DEFINITIONS))
 
@@ -89,6 +95,8 @@ class PythonVersionTestCase(unittest.TestCase):
         self.assertEqual(7, version.minor)
         self.assertEqual(7, version.micro)
         self.assertEqual(('c', 1), version.suffix)
+        self.assertEqual('c', version.suffix.releaselevel)
+        self.assertEqual(1, version.suffix.serial)
         self.assertRaises(IndexError, version.__getitem__,
                           len(PythonVersion.SEGMENT_DEFINITIONS))
 
@@ -133,6 +141,8 @@ class PythonVersionTestCase(unittest.TestCase):
         self.assertEqual(4, version.minor)
         self.assertEqual(1, version.micro)
         self.assertEqual(('c', 1), version.suffix)
+        self.assertEqual('c', version.suffix.releaselevel)
+        self.assertEqual(1, version.suffix.serial)
 
     def test_valid_string_nonrelease(self):
         version = PythonVersion('3.4.1+')
@@ -140,6 +150,8 @@ class PythonVersionTestCase(unittest.TestCase):
         self.assertEqual(4, version.minor)
         self.assertEqual(1, version.micro)
         self.assertEqual(('+', None), version.suffix)
+        self.assertEqual('+', version.suffix.releaselevel)
+        self.assertEqual(None, version.suffix.serial)
 
     def test_valid_development_minor_equal(self):
         self.assertEqual(PythonMinorVersion(2, 3),
