@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>verschemes &mdash; verschemes 1.1.0 documentation</title>
+    <title>verschemes &mdash; verschemes 1.2.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.1.0',
+        VERSION:     '1.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="verschemes 1.1.0 documentation" href="../index.html" />
+    <link rel="top" title="verschemes 1.2.0 documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">verschemes 1.1.0 documentation</a> &raquo;</li>
+        <li><a href="../index.html">verschemes 1.2.0 documentation</a> &raquo;</li>
           <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -60,6 +60,7 @@
 <span class="kn">from</span> <span class="nn">verschemes.future</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
@@ -68,45 +69,100 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[]</span>
 
+
+<span class="k">def</span> <span class="nf">_is_string</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return whether `value` is a string.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">future</span><span class="o">.</span><span class="n">native_str</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_validate_string</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Validate that the input is a string and return it as str.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">_is_string</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+        <span class="s">&quot;{!r} is not a string.&quot;</span>
+        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+
 <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;DEFAULT_FIELD_TYPE&#39;</span><span class="p">)</span>
 <span class="n">DEFAULT_FIELD_TYPE</span> <span class="o">=</span> <span class="nb">int</span>
 <span class="sd">&quot;&quot;&quot;The type used for fields with no type explicitly specified.&quot;&quot;&quot;</span>
 
 
 <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;SegmentField&#39;</span><span class="p">)</span>
-<span class="n">SegmentField</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;SegmentField&#39;</span><span class="p">,</span>
-                                      <span class="s">&#39;type name re_pattern render&#39;</span><span class="p">)</span>
-<span class="sd">&quot;&quot;&quot;The definition of an atomic portion of a version segment value.</span>
+<div class="viewcode-block" id="SegmentField"><a class="viewcode-back" href="../api.html#verschemes.SegmentField">[docs]</a><span class="k">class</span> <span class="nc">SegmentField</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;_SegmentField&#39;</span><span class="p">,</span>
+                                          <span class="s">&#39;type name re_pattern render&#39;</span><span class="p">)):</span>
 
-<span class="sd">This is an immutable set of metadata defining the parameters of a field in a</span>
-<span class="sd">`SegmentDefinition`.</span>
+    <span class="sd">&quot;&quot;&quot;The definition of an atomic portion of a version segment value.</span>
 
-<span class="sd">The attributes can be set only in the constructor by name or position and can</span>
-<span class="sd">be accessed by attribute name (preferred) or item index:</span>
+<span class="sd">    This is an immutable set of metadata defining the parameters of a field in</span>
+<span class="sd">    a `SegmentDefinition`.</span>
 
-<span class="sd">0. :attr:`type` (default: `int`) is the underlying type of the field value.</span>
+<span class="sd">    The attributes can be set only in the constructor by name or position and</span>
+<span class="sd">    can be accessed by attribute name (preferred) or item index:</span>
 
-<span class="sd">   Only `int` and `str` have been tested.</span>
+<span class="sd">    0. :attr:`type` (default: `int`) is the underlying type of the field value.</span>
 
-<span class="sd">1. :attr:`name` (default: &quot;value&quot;) is the name of the field, which must be</span>
-<span class="sd">   unique among all of the fields in a segment.</span>
+<span class="sd">       Only `int` and `str` have been tested.</span>
 
-<span class="sd">   Each segment will often have only one field, so the name is defaulted to</span>
-<span class="sd">   something quite generic, but it must be explicitly set to ensure uniqueness</span>
-<span class="sd">   when the `SegmentDefinition` contains multiple fields.</span>
+<span class="sd">    1. :attr:`name` (default: &quot;value&quot;) is the name of the field, which must be</span>
+<span class="sd">       unique among all of the fields in a segment.</span>
 
-<span class="sd">2. :attr:`re_pattern` (default: &quot;[0-9]+&quot;) is the regular expression pattern</span>
-<span class="sd">   that the string representation of the field value must match.</span>
+<span class="sd">       Each segment will often have only one field, so the name is defaulted to</span>
+<span class="sd">       something quite generic, but it must be explicitly set to ensure</span>
+<span class="sd">       uniqueness when the `SegmentDefinition` contains multiple fields.</span>
 
-<span class="sd">3. :attr:`render` (default: `str`) is the function that takes the underlying</span>
-<span class="sd">   value and returns its appropriate string representation.</span>
+<span class="sd">       If the field name is specified, it must be a valid Python identifier</span>
+<span class="sd">       that does not start with an underscore.  This field can then be</span>
+<span class="sd">       identified by this name in the segment value of a `Version` subclass if</span>
+<span class="sd">       the corresponding segment definition contains multiple fields, because</span>
+<span class="sd">       the value is a subclass of `~collections.namedtuple` named `Segment`</span>
+<span class="sd">       that has fields corresponding to the segment definition&#39;s fields.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    2. :attr:`re_pattern` (default: &quot;[0-9]+&quot;) is the regular expression pattern</span>
+<span class="sd">       that the string representation of the field value must match.</span>
 
-<span class="n">SegmentField</span><span class="o">.</span><span class="n">__new__</span><span class="o">.</span><span class="n">__defaults__</span> <span class="o">=</span> <span class="p">(</span><span class="n">DEFAULT_FIELD_TYPE</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">,</span> <span class="s">&#39;[0-9]+&#39;</span><span class="p">,</span>
-                                     <span class="nb">str</span><span class="p">)</span>
+<span class="sd">    3. :attr:`render` (default: `str`) is the function that takes the</span>
+<span class="sd">       underlying value and returns its appropriate string representation.</span>
+<span class="sd">       Note that in Python 2 this `str` is from the `future` package and is</span>
+<span class="sd">       similar to `unicode`.</span>
 
+<span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">DEFAULT_FIELD_TYPE</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;value&#39;</span><span class="p">,</span>
+                <span class="n">re_pattern</span><span class="o">=</span><span class="s">&#39;[0-9]+&#39;</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provide default values, and validate given values.</span>
+
+<span class="sd">        This cannot be done with `__init__` since `self` is immutable.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Validate type.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s">&quot;The &#39;type&#39; argument must be a class.&quot;</span><span class="p">)</span>
+
+        <span class="c"># Validate name.</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">_validate_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;A field name must not begin with an underscore.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;A field name must be a valid identifier.&quot;</span><span class="p">)</span>
+
+        <span class="c"># Validate re_pattern.</span>
+        <span class="n">re_pattern</span> <span class="o">=</span> <span class="n">_validate_string</span><span class="p">(</span><span class="n">re_pattern</span><span class="p">)</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">re_pattern</span><span class="p">)</span>  <span class="c"># valid regular expression check</span>
+
+        <span class="c"># Validate render.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">render</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s">&quot;The &#39;render&#39; argument must be callable.&quot;</span><span class="p">)</span>
+
+        <span class="c"># Call the super method.</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">re_pattern</span><span class="p">,</span> <span class="n">render</span><span class="p">)</span>
+
+</div>
 <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;DEFAULT_SEGMENT_FIELD&#39;</span><span class="p">)</span>
 <span class="n">DEFAULT_SEGMENT_FIELD</span> <span class="o">=</span> <span class="n">SegmentField</span><span class="p">()</span>
 <span class="sd">&quot;&quot;&quot;The default `SegmentField` instance.&quot;&quot;&quot;</span>
@@ -186,6 +242,10 @@
 <span class="sd">        This cannot be done with `__init__` since `self` is immutable.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Validate optional.</span>
+        <span class="n">optional</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">optional</span><span class="p">)</span>
+
+        <span class="c"># Validate fields.</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">SegmentField</span><span class="p">):</span>
             <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="n">fields</span><span class="p">,)</span>
         <span class="k">elif</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span>
@@ -197,30 +257,37 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">))</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s">&quot;Field names must be unique within a segment definition.&quot;</span><span class="p">)</span>
+
+        <span class="c"># Validate default.</span>
         <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">default</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">_validate_value</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+
+        <span class="c"># Validate separator.</span>
+        <span class="n">separator</span> <span class="o">=</span> <span class="n">_validate_string</span><span class="p">(</span><span class="n">separator</span><span class="p">)</span>
+
+        <span class="c"># Validate name.</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">_validate_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s">&quot;Segment names must not begin with an underscore.&quot;</span><span class="p">)</span>
-            <span class="c"># For Python 2, name must be converted to str to have this method.</span>
-            <span class="c"># if not name.isidentifier():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">():</span>
+                    <span class="s">&quot;A segment name must not begin with an underscore.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s">&quot;Segment names must be valid identifiers.&quot;</span><span class="p">)</span>
+                    <span class="s">&quot;A segment name must be a valid identifier.&quot;</span><span class="p">)</span>
+
+        <span class="c"># Validate separator_re_pattern.</span>
         <span class="k">if</span> <span class="n">separator_re_pattern</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">separator_re_pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="s">&quot;The separator_re_pattern argument must be a string.&quot;</span><span class="p">)</span>
+            <span class="n">separator_re_pattern</span> <span class="o">=</span> <span class="n">_validate_string</span><span class="p">(</span><span class="n">separator_re_pattern</span><span class="p">)</span>
             <span class="c"># Validate that the pattern is a valid regular expression.</span>
             <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">separator_re_pattern</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">optional</span><span class="p">),</span> <span class="n">default</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">separator</span><span class="p">),</span>
-                               <span class="n">fields</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="bp">None</span><span class="p">,</span>
+
+        <span class="c"># Call the super method.</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">optional</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">separator</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span>
                                <span class="n">separator_re_pattern</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_validate_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_is_string</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
             <span class="n">value_string</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">values</span> <span class="o">=</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -251,7 +318,10 @@
             <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="bp">None</span>
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span>
+                <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;Segment&#39;</span><span class="p">,</span>
+                                       <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">)</span>
+                                       <span class="p">)(</span><span class="o">*</span><span class="n">result</span><span class="p">))</span>
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="SegmentDefinition.re_pattern"><a class="viewcode-back" href="../api.html#verschemes.SegmentDefinition.re_pattern">[docs]</a>    <span class="k">def</span> <span class="nf">re_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -276,8 +346,17 @@
 <div class="viewcode-block" id="SegmentDefinition.validate_value"><a class="viewcode-back" href="../api.html#verschemes.SegmentDefinition.validate_value">[docs]</a>    <span class="k">def</span> <span class="nf">validate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the given value and return the value as the inner type.</span>
 
-<span class="sd">        The given value may be a tuple of field values or a string that shall</span>
-<span class="sd">        be parsed by the fields&#39; regular expressions.</span>
+<span class="sd">        The given value may be:</span>
+
+<span class="sd">        * a field value if there is only one field,</span>
+<span class="sd">        * a tuple of field values, or</span>
+<span class="sd">        * a string that shall be parsed by the fields&#39; regular expressions.</span>
+
+<span class="sd">        The result will be:</span>
+
+<span class="sd">        * a field value if there is only one field or</span>
+<span class="sd">        * a `Segment` (`~collections.namedtuple` subclass) instance whose</span>
+<span class="sd">          attributes and values correspond to the fields&#39; names and values.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -417,7 +496,7 @@
 
 
 <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;Version&#39;</span><span class="p">)</span>
-<span class="nd">@future.python_2_unicode_compatible</span>
+<span class="nd">@python_2_unicode_compatible</span>
 <div class="viewcode-block" id="Version"><a class="viewcode-back" href="../api.html#verschemes.Version">[docs]</a><span class="k">class</span> <span class="nc">Version</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">with_metaclass</span><span class="p">(</span><span class="n">_VersionMeta</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
 
     <span class="sd">&quot;&quot;&quot;A class whose instances adhere to the version scheme it defines.</span>
@@ -480,7 +559,7 @@
 
     <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">segment_definitions</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">_is_string</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="c"># Process a version string passed as the only argument.</span>
             <span class="n">string</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">segment_definitions</span><span class="p">:</span>
@@ -564,7 +643,7 @@
         <span class="n">definitions</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span>
         <span class="k">if</span> <span class="n">definitions</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">_is_string</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
                     <span class="n">definitions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">definitions</span>
                                        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                 <span class="n">definitions</span> <span class="o">=</span> <span class="n">definitions</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
@@ -583,12 +662,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">item</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_is_string</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">definition</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">SEGMENT_DEFINITIONS</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">definition</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">item</span><span class="p">:</span>
                     <span class="n">item</span> <span class="o">=</span> <span class="n">index</span>
                     <span class="k">break</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">_is_string</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 </div>
@@ -674,7 +753,7 @@
 
         <span class="k">def</span> <span class="nf">callback_affirmative</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
             <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">]</span>
-            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Callable</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span> <span class="ow">and</span>
                 <span class="nb">isinstance</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)):</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">callback</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
                 <span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -757,7 +836,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">verschemes 1.1.0 documentation</a> &raquo;</li>
+        <li><a href="../index.html">verschemes 1.2.0 documentation</a> &raquo;</li>
           <li><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

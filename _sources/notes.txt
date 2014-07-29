@@ -1,6 +1,19 @@
 Release Notes
 =============
 
+Version 1.2
+-----------
+
+This is no longer a need for Python 2 clients to use the `future` library in
+client code nor to pass `unicode` objects for strings.  They are still allowed
+of course, but Python 2 str objects are now accepted as input into the library
+without causing bugs.  The library's internal stored values are still Unicode.
+
+Segments whose definitions contain multiple fields now have
+`~collections.namedtuple`-based values, from which one can access the field
+values by the fields' names.  See the `~verschemes.python.PythonVersion`
+(`suffix` segment) :ref:`properties examples <properties_examples>`.
+
 Version 1.1
 -----------
 

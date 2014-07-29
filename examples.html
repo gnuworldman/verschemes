@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Examples &mdash; verschemes 1.1.0 documentation</title>
+    <title>Examples &mdash; verschemes 1.2.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.1.0',
+        VERSION:     '1.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="verschemes 1.1.0 documentation" href="index.html" />
+    <link rel="top" title="verschemes 1.2.0 documentation" href="index.html" />
     <link rel="next" title="Release Notes" href="notes.html" />
     <link rel="prev" title="API (the verschemes package)" href="api.html" /> 
   </head>
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="api.html" title="API (the verschemes package)"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">verschemes 1.1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">verschemes 1.2.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -75,8 +75,8 @@
 <h2>Instantiation from segment values<a class="headerlink" href="#instantiation-from-segment-values" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Version</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 <span class="go">verschemes.Version(3, 1, 4)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">PythonVersion</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&quot;b5&quot;</span><span class="p">)</span>
-<span class="go">verschemes.python.PythonVersion(3, 1, 4, (&#39;b&#39;, 5))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">PythonVersion</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;b&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="go">verschemes.python.PythonVersion(3, 1, 4, Segment(releaselevel=&#39;b&#39;, serial=5))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Pep440Version</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 <span class="go">verschemes.pep440.Pep440Version(None, 3, 1, 4, None, None, None, None, None, None)</span>
 </pre></div>
@@ -114,7 +114,7 @@
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Version</span><span class="p">(</span><span class="s">&quot;3.1.10&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">Version</span><span class="p">(</span><span class="s">&quot;3.1.4&quot;</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">PythonVersion</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&quot;b5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">minor_version</span> <span class="o">==</span> <span class="n">PythonMinorVersion</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">PythonVersion</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;b&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span><span class="o">.</span><span class="n">minor_version</span> <span class="o">==</span> <span class="n">PythonMinorVersion</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -133,10 +133,21 @@
 </div>
 </div>
 <div class="section" id="properties">
-<h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">PythonVersion</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&quot;b5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_release</span>
+<span id="properties-examples"></span><h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">version</span> <span class="o">=</span> <span class="n">PythonVersion</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;b&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">version</span><span class="o">.</span><span class="n">major</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">version</span><span class="o">.</span><span class="n">minor</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">version</span><span class="o">.</span><span class="n">micro</span>
+<span class="go">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">version</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">releaselevel</span>
+<span class="go">&#39;b&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">version</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">serial</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">version</span><span class="o">.</span><span class="n">is_release</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">PythonVersion</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&quot;b5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_nondevelopment</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">version</span><span class="o">.</span><span class="n">is_nondevelopment</span>
 <span class="go">False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Pep440Version</span><span class="p">(</span><span class="s">&quot;3.1.4&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_release</span>
 <span class="go">True</span>
@@ -225,7 +236,7 @@
         <li class="right" >
           <a href="api.html" title="API (the verschemes package)"
              >previous</a> |</li>
-        <li><a href="index.html">verschemes 1.1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">verschemes 1.2.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

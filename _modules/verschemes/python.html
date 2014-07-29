@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>verschemes.python &mdash; verschemes 1.1.0 documentation</title>
+    <title>verschemes.python &mdash; verschemes 1.2.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.1.0',
+        VERSION:     '1.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="verschemes 1.1.0 documentation" href="../../index.html" />
+    <link rel="top" title="verschemes 1.2.0 documentation" href="../../index.html" />
     <link rel="up" title="verschemes" href="../verschemes.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">verschemes 1.1.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">verschemes 1.2.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../verschemes.html" accesskey="U">verschemes</a> &raquo;</li> 
       </ul>
@@ -229,7 +229,8 @@
 <span class="sd">        &gt;&gt;&gt; assert(not PythonVersion(&#39;3.4.1+&#39;).is_release)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">SUFFIX</span><span class="p">]</span> <span class="o">!=</span> <span class="p">(</span><span class="s">&#39;+&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span></div></div>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">SUFFIX</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">suffix</span><span class="o">.</span><span class="n">releaselevel</span> <span class="o">!=</span> <span class="s">&#39;+&#39;</span></div></div>
 </pre></div>
 
           </div>
@@ -263,7 +264,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">verschemes 1.1.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">verschemes 1.2.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../verschemes.html" >verschemes</a> &raquo;</li> 
       </ul>

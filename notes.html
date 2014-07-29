@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Release Notes &mdash; verschemes 1.1.0 documentation</title>
+    <title>Release Notes &mdash; verschemes 1.2.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.1.0',
+        VERSION:     '1.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="verschemes 1.1.0 documentation" href="index.html" />
+    <link rel="top" title="verschemes 1.2.0 documentation" href="index.html" />
     <link rel="prev" title="Examples" href="examples.html" /> 
   </head>
   <body>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="examples.html" title="Examples"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">verschemes 1.1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">verschemes 1.2.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -50,6 +50,17 @@
             
   <div class="section" id="release-notes">
 <h1>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-1-2">
+<h2>Version 1.2<a class="headerlink" href="#version-1-2" title="Permalink to this headline">¶</a></h2>
+<p>This is no longer a need for Python 2 clients to use the <tt class="xref py py-obj docutils literal"><span class="pre">future</span></tt> library in
+client code nor to pass <tt class="xref py py-obj docutils literal"><span class="pre">unicode</span></tt> objects for strings.  They are still allowed
+of course, but Python 2 str objects are now accepted as input into the library
+without causing bugs.  The library&#8217;s internal stored values are still Unicode.</p>
+<p>Segments whose definitions contain multiple fields now have
+<a class="reference external" href="http://docs.python.org/3/library/collections.html#collections.namedtuple" title="(in Python v3.4)"><tt class="xref py py-obj docutils literal"><span class="pre">namedtuple</span></tt></a>-based values, from which one can access the field
+values by the fields&#8217; names.  See the <a class="reference internal" href="api.html#verschemes.python.PythonVersion" title="verschemes.python.PythonVersion"><tt class="xref py py-obj docutils literal"><span class="pre">PythonVersion</span></tt></a>
+(<tt class="xref py py-obj docutils literal"><span class="pre">suffix</span></tt> segment) <a class="reference internal" href="examples.html#properties-examples"><em>properties examples</em></a>.</p>
+</div>
 <div class="section" id="version-1-1">
 <h2>Version 1.1<a class="headerlink" href="#version-1-1" title="Permalink to this headline">¶</a></h2>
 <p>All <a class="reference internal" href="api.html#verschemes.Version" title="verschemes.Version"><tt class="xref py py-obj docutils literal"><span class="pre">Version</span></tt></a>s are now immutable; setting segment values with
@@ -93,6 +104,7 @@ included in the <a class="reference internal" href="api.html#module-verschemes.x
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Release Notes</a><ul>
+<li><a class="reference internal" href="#version-1-2">Version 1.2</a></li>
 <li><a class="reference internal" href="#version-1-1">Version 1.1</a></li>
 <li><a class="reference internal" href="#version-1-0">Version 1.0</a></li>
 </ul>
@@ -136,7 +148,7 @@ included in the <a class="reference internal" href="api.html#module-verschemes.x
         <li class="right" >
           <a href="examples.html" title="Examples"
              >previous</a> |</li>
-        <li><a href="index.html">verschemes 1.1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">verschemes 1.2.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
