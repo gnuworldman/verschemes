@@ -21,4 +21,9 @@ class newstr(str):
     """
 
     def isidentifier(self):
+        """Override to provide an actual implementation.
+
+        This can be removed if the base ever includes the implementation.
+
+        """
         return utils.isidentifier(self)
