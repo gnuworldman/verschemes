@@ -72,6 +72,8 @@ Normalization
 >>> str(Pep440Version("3.1.4.RC7"))
 '3.1.4c7'
 
+.. _properties_examples:
+
 Properties
 ----------
 
