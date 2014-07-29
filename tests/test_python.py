@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 """Python verschemes tests"""
 
-# Support Python 2 & 3.
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-from verschemes.future import *
-
 import unittest
 
 from verschemes.python import (PythonMajorVersion, PythonMicroVersion,

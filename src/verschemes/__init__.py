@@ -11,6 +11,7 @@ from __future__ import (absolute_import, division, print_function,
 from verschemes.future import *
 
 import collections
+import inspect
 import itertools
 import re
 
@@ -19,43 +20,98 @@ from verschemes._version import __version__, __version_info__
 
 __all__ = []
 
+
+def _is_string(value):
+    """Return whether `value` is a string."""
+    return isinstance(value, (str, future.native_str))
+
+
+def _validate_string(value):
+    """Validate that the input is a string and return it as str."""
+    if _is_string(value):
+        return str(value)
+    raise TypeError(
+        "{!r} is not a string."
+        .format(value))
+
+
 __all__.append('DEFAULT_FIELD_TYPE')
 DEFAULT_FIELD_TYPE = int
 """The type used for fields with no type explicitly specified."""
 
 
 __all__.append('SegmentField')
-SegmentField = collections.namedtuple('SegmentField',
-                                      'type name re_pattern render')
-"""The definition of an atomic portion of a version segment value.
+class SegmentField(collections.namedtuple('_SegmentField',
+                                          'type name re_pattern render')):
 
-This is an immutable set of metadata defining the parameters of a field in a
-`SegmentDefinition`.
+    """The definition of an atomic portion of a version segment value.
 
-The attributes can be set only in the constructor by name or position and can
-be accessed by attribute name (preferred) or item index:
+    This is an immutable set of metadata defining the parameters of a field in
+    a `SegmentDefinition`.
 
-0. :attr:`type` (default: `int`) is the underlying type of the field value.
+    The attributes can be set only in the constructor by name or position and
+    can be accessed by attribute name (preferred) or item index:
 
-   Only `int` and `str` have been tested.
+    0. :attr:`type` (default: `int`) is the underlying type of the field value.
 
-1. :attr:`name` (default: "value") is the name of the field, which must be
-   unique among all of the fields in a segment.
+       Only `int` and `str` have been tested.
 
-   Each segment will often have only one field, so the name is defaulted to
-   something quite generic, but it must be explicitly set to ensure uniqueness
-   when the `SegmentDefinition` contains multiple fields.
+    1. :attr:`name` (default: "value") is the name of the field, which must be
+       unique among all of the fields in a segment.
 
-2. :attr:`re_pattern` (default: "[0-9]+") is the regular expression pattern
-   that the string representation of the field value must match.
+       Each segment will often have only one field, so the name is defaulted to
+       something quite generic, but it must be explicitly set to ensure
+       uniqueness when the `SegmentDefinition` contains multiple fields.
 
-3. :attr:`render` (default: `str`) is the function that takes the underlying
-   value and returns its appropriate string representation.
+       If the field name is specified, it must be a valid Python identifier
+       that does not start with an underscore.  This field can then be
+       identified by this name in the segment value of a `Version` subclass if
+       the corresponding segment definition contains multiple fields, because
+       the value is a subclass of `~collections.namedtuple` named `Segment`
+       that has fields corresponding to the segment definition's fields.
 
-"""
+    2. :attr:`re_pattern` (default: "[0-9]+") is the regular expression pattern
+       that the string representation of the field value must match.
 
-SegmentField.__new__.__defaults__ = (DEFAULT_FIELD_TYPE, 'value', '[0-9]+',
-                                     str)
+    3. :attr:`render` (default: `str`) is the function that takes the
+       underlying value and returns its appropriate string representation.
+       Note that in Python 2 this `str` is from the `future` package and is
+       similar to `unicode`.
+
+    """
+
+    def __new__(cls, type=DEFAULT_FIELD_TYPE, name='value',
+                re_pattern='[0-9]+', render=str):
+        """Provide default values, and validate given values.
+
+        This cannot be done with `__init__` since `self` is immutable.
+
+        """
+        # Validate type.
+        if not inspect.isclass(type):
+            raise TypeError(
+                "The 'type' argument must be a class.")
+
+        # Validate name.
+        name = _validate_string(name)
+        if name.startswith('_'):
+            raise ValueError(
+                "A field name must not begin with an underscore.")
+        if not name.isidentifier():
+            raise ValueError(
+                "A field name must be a valid identifier.")
+
+        # Validate re_pattern.
+        re_pattern = _validate_string(re_pattern)
+        re.compile(re_pattern)  # valid regular expression check
+
+        # Validate render.
+        if not callable(render):
+            raise TypeError(
+                "The 'render' argument must be callable.")
+
+        # Call the super method.
+        return super().__new__(cls, type, name, re_pattern, render)
 
 
 __all__.append('DEFAULT_SEGMENT_FIELD')
@@ -137,6 +193,10 @@ class SegmentDefinition(collections.namedtuple('_SegmentDefinition',
         This cannot be done with `__init__` since `self` is immutable.
 
         """
+        # Validate optional.
+        optional = bool(optional)
+
+        # Validate fields.
         if isinstance(fields, SegmentField):
             fields = (fields,)
         elif (not isinstance(fields, tuple) and
@@ -148,30 +208,37 @@ class SegmentDefinition(collections.namedtuple('_SegmentDefinition',
         if len(set(x.name for x in fields)) < len(fields):
             raise ValueError(
                 "Field names must be unique within a segment definition.")
+
+        # Validate default.
         if default is not None:
             default = cls._validate_value(default, fields)
-        if name:
+
+        # Validate separator.
+        separator = _validate_string(separator)
+
+        # Validate name.
+        if name is not None:
+            name = _validate_string(name)
             if name.startswith('_'):
                 raise ValueError(
-                    "Segment names must not begin with an underscore.")
-            # For Python 2, name must be converted to str to have this method.
-            # if not name.isidentifier():
-            if not str(name).isidentifier():
+                    "A segment name must not begin with an underscore.")
+            if not name.isidentifier():
                 raise ValueError(
-                    "Segment names must be valid identifiers.")
+                    "A segment name must be a valid identifier.")
+
+        # Validate separator_re_pattern.
         if separator_re_pattern is not None:
-            if not isinstance(separator_re_pattern, str):
-                raise TypeError(
-                    "The separator_re_pattern argument must be a string.")
+            separator_re_pattern = _validate_string(separator_re_pattern)
             # Validate that the pattern is a valid regular expression.
             re.compile(separator_re_pattern)
-        return super().__new__(cls, bool(optional), default, str(separator),
-                               fields, str(name) if name else None,
+
+        # Call the super method.
+        return super().__new__(cls, optional, default, separator, fields, name,
                                separator_re_pattern)
 
     @staticmethod
     def _validate_value(value, fields):
-        if isinstance(value, str):
+        if _is_string(value):
             value_string = value
         else:
             values = (list(value)
@@ -368,7 +435,7 @@ class _VersionMeta(type):
 
 
 __all__.append('Version')
-@future.python_2_unicode_compatible
+@python_2_unicode_compatible
 class Version(future.with_metaclass(_VersionMeta, tuple)):
 
     """A class whose instances adhere to the version scheme it defines.
@@ -431,7 +498,7 @@ class Version(future.with_metaclass(_VersionMeta, tuple)):
 
     def __new__(cls, *args, **kwargs):
         segment_definitions = cls.SEGMENT_DEFINITIONS
-        if len(args) == 1 and isinstance(args[0], str):
+        if len(args) == 1 and _is_string(args[0]):
             # Process a version string passed as the only argument.
             string = args[0]
             if segment_definitions:
@@ -515,7 +582,7 @@ class Version(future.with_metaclass(_VersionMeta, tuple)):
         definitions = type(self).SEGMENT_DEFINITIONS
         if definitions:
             if item is not None:
-                if isinstance(item, str):
+                if _is_string(item):
                     definitions = dict((x.name, x) for x in definitions
                                        if x.name)
                 definitions = definitions[item]
@@ -534,12 +601,12 @@ class Version(future.with_metaclass(_VersionMeta, tuple)):
         """
         if item is None:
             item = slice(0, len(self))
-        if isinstance(item, str):
+        if _is_string(item):
             for index, definition in enumerate(type(self).SEGMENT_DEFINITIONS):
                 if definition.name == item:
                     item = index
                     break
-            if isinstance(item, str):
+            if _is_string(item):
                 raise KeyError(item)
         return super().__getitem__(item)
 
@@ -625,7 +692,7 @@ class Version(future.with_metaclass(_VersionMeta, tuple)):
 
         def callback_affirmative(callback, index):
             args = [self, index]
-            if (not isinstance(callback, collections.Callable) and
+            if (not callable(callback) and
                 isinstance(callback, collections.Iterable)):
                 args.extend(callback[1:])
                 callback = callback[0]

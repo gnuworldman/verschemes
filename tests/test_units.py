@@ -1,10 +1,5 @@
 """verschemes unit tests"""
 
-# Support Python 2 & 3.
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-from verschemes.future import *
-
 import operator
 import re
 import sys
@@ -15,6 +10,52 @@ from verschemes import SegmentDefinition, SegmentField, Version, _VersionMeta
 
 
 class SegmentFieldTestCase(unittest.TestCase):
+
+    def test_init_type(self):
+        # Valid types succeed.
+        class C(object):
+            pass
+        for value in (dict, C):
+            SegmentField(type=value)
+
+        # Invalid types raise TypeError.
+        for value in (1, 'a', [dict]):
+            self.assertRaises(TypeError, SegmentField, type=value)
+
+    def test_init_name(self):
+        # Valid names succeed.
+        for value in ("valid", u'identifiers'):
+            SegmentField(name=value)
+
+        # Invalid name instances raise TypeError.
+        for value in (1, dict, [dict]):
+            self.assertRaises(TypeError, SegmentField, name=value)
+
+        # Invalid name values raise ValueError.
+        for value in ("", "invalid-identifier", '_underscore'):
+            self.assertRaises(ValueError, SegmentField, name=value)
+
+    def test_init_re_pattern(self):
+        # Valid patterns succeed.
+        for value in ("valid", u'[Pp]atterns?', r"\.", '[0-9]+'):
+            SegmentField(re_pattern=value)
+
+        # Invalid instances raise TypeError.
+        for value in (1, dict, ['a'], re.compile('[0-9]+')):
+            self.assertRaises(TypeError, SegmentField, re_pattern=value)
+
+        # Invalid regular expression patterns raise re.error.
+        for value in ("parenthesis(mismatch", 'invalid(?pattern)'):
+            self.assertRaises(re.error, SegmentField, re_pattern=value)
+
+    def test_init_render(self):
+        # Valid patterns succeed.
+        for value in (dict, callable, isinstance, lambda x: x + 1):
+            SegmentField(render=value)
+
+        # Invalid instances raise TypeError.
+        for value in (1, 'a', [dict], None):
+            self.assertRaises(TypeError, SegmentField, render=value)
 
     def test_eq_default(self):
         self.assertEqual(SegmentField(), SegmentField())
@@ -378,7 +419,8 @@ class VersionRenderTestCase(unittest.TestCase):
             def _render_exclude_defaults_callback(self, index, scope=None):
                 if scope is None:
                     scope = range(4)
-                return super()._render_exclude_defaults_callback(index, scope)
+                return (super(Version2, self)
+                        ._render_exclude_defaults_callback(index, scope))
         version1 = Version1(1, fifth=50)
         version2 = Version2(1, fifth=50)
         version2_with_third = Version2(1, third=30, fifth=50)

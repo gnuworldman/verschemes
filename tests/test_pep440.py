@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 """PEP 440 verschemes tests"""
 
-# Support Python 2 & 3.
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-from verschemes.future import *
-
 import unittest
 
 from verschemes.pep440 import Pep440Version

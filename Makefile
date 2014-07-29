@@ -7,8 +7,7 @@ all: coverage build doc
 
 test:
 	PYTHONPATH=src coverage run --branch --module unittest discover
-	# doctest does not work on docs/examples.rst in Python 2.
-	if [[ `python -c 'import sys; print(sys.version_info[0])'` = 3 ]]; then PYTHONPATH=src python -m doctest docs/examples.rst; fi
+	PYTHONPATH=src python -m doctest docs/examples.rst
 
 coverage: test
 	coverage report
