@@ -2,11 +2,6 @@
 # -*- coding: utf-8 -*-
 """setup.py for the verschemes project"""
 
-# Support Python 2 & 3.
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-from future import utils
-
 import os
 
 from setuptools import setup
@@ -40,7 +35,7 @@ setup(
         'Topic :: Utilities',
         ],
     package_dir={'': 'src'},
-    packages=[utils.native_str('verschemes'),
-              utils.native_str('verschemes.future')],
+    packages=['verschemes',
+              'verschemes.future'],
     install_requires=['future'],
     )
